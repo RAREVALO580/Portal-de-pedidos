@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Traslados | Seguimiento a Tienda - Macropay Retail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --border-subtle: #E2E8F0;
+      --primary-navy: #00296B;
+      --corp-blue: #0050C8;
+      --corp-blue-light: #EFF6FF;
+      --accent-yellow: #FFC700;
+      --accent-yellow-light: #FEF9C3;
+      --accent-yellow-text: #854D0E;
+      --alert-red: #D90429;
+      --alert-red-light: #FEE2E2;
+      --alert-red-text: #991B1B;
+      --success-green: #10B981;
+      --success-green-light: #DCFCE7;
+      --success-green-text: #166534;
+      --warning-amber: #F59E0B;
+      --warning-amber-light: #FEF3C7;
+      --text-main: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #94A3B8;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      line-height: 1.45;
+      min-width: 1200px;
+      padding: 20px 28px 40px;
+    }
+
+    /* Container for 1920x1200 canvas optimization */
+    .dashboard-container {
+      max-width: 1860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* ==========================================================================
+       1. TOP BAR: HEADER & FILTERS
+       ========================================================================== */
+    .top-bar {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .top-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-accent-line {
+      width: 6px;
+      height: 44px;
+      background: var(--accent-yellow);
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(255, 199, 0, 0.5);
+    }
+
+    .brand-titles h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary-navy);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-titles p {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .sap-status-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #F1F5F9;
+      padding: 8px 14px;
+      border-radius: 30px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .pulse-dot {
+      width: 9px;
+      height: 9px;
+      background-color: var(--success-green);
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .pulse-dot::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-color: var(--success-green);
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(2.6); opacity: 0; }
+    }
+
+    /* Filter Controls Row */
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #F1F5F9;
+    }
+
+    .filter-left-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .filter-box label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .custom-select {
+      appearance: none;
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 36px 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary-navy);
+      cursor: pointer;
+      min-width: 270px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .custom-select:focus {
+      border-color: var(--corp-blue);
+      box-shadow: 0 0 0 3px rgba(0, 80, 200, 0.12);
+    }
+
+    .select-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+    }
+
+    /* Category Buttons Group */
+    .btn-group {
+      display: inline-flex;
+      background: #F1F5F9;
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .category-btn {
+      border: none;
+      background: transparent;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .category-btn:hover {
+      color: var(--primary-navy);
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .category-btn.active {
+      background: #FFFFFF;
+      color: var(--primary-navy);
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .category-btn .badge {
+      background: #E2E8F0;
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+
+    .category-btn.active .badge {
+      background: var(--corp-blue-light);
+      color: var(--corp-blue);
+    }
+
+    /* Status Pills Group */
+    .status-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-filter-chip {
+      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .status-filter-chip:hover {
+      border-color: var(--corp-blue);
+      color: var(--corp-blue);
+    }
+
+    .status-filter-chip.active {
+      background: var(--primary-navy);
+      border-color: var(--primary-navy);
+      color: #FFFFFF;
+    }
+
+    /* Global Search */
+    .search-input-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px 8px 34px;
+      font-size: 0.85rem;
+      width: 250px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--corp-blue);
+      box-shadow: 0 0 0 3px rgba(0, 80, 200, 0.12);
+      width: 300px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ==========================================================================
+       2. KPI SCORECARDS (4 COLUMNS)
+       ========================================================================== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+    }
+
+    .kpi-card-1::before { background: var(--corp-blue); }
+    .kpi-card-2::before { background: var(--accent-yellow); }
+    .kpi-card-3::before { background: var(--alert-red); }
+    .kpi-card-4::before { background: var(--primary-navy); }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .kpi-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .kpi-icon-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+    }
+
+    .kpi-card-1 .kpi-icon-badge { background: var(--corp-blue-light); color: var(--corp-blue); }
+    .kpi-card-2 .kpi-icon-badge { background: var(--accent-yellow-light); color: var(--accent-yellow-text); }
+    .kpi-card-3 .kpi-icon-badge { background: var(--alert-red-light); color: var(--alert-red-text); }
+    .kpi-card-4 .kpi-icon-badge { background: #E0E7FF; color: var(--primary-navy); }
+
+    .kpi-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .kpi-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary-navy);
+      letter-spacing: -0.03em;
+    }
+
+    .kpi-unit {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .kpi-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-top: 1px solid #F8FAFC;
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+
+    .kpi-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .pill-blue { background: var(--corp-blue-light); color: var(--corp-blue); }
+    .pill-yellow { background: var(--accent-yellow-light); color: var(--accent-yellow-text); }
+    .pill-red { background: var(--alert-red-light); color: var(--alert-red-text); }
+    .pill-navy { background: #E2E8F0; color: var(--primary-navy); }
+
+    /* ==========================================================================
+       3. STEPPER DINÁMICO & TRACKER (UBER EATS / AMAZON LOGISTICS STYLE)
+       ========================================================================== */
+    .tracking-section {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+    }
+
+    .tracking-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid #F1F5F9;
+      padding-bottom: 14px;
+    }
+
+    .tracking-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tracking-title-wrap h2 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .order-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      font-weight: 700;
+      background: #F1F5F9;
+      color: var(--primary-navy);
+      padding: 3px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .tracking-badges-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .status-en-ruta {
+      background: var(--accent-yellow-light);
+      color: var(--accent-yellow-text);
+      border-color: #FDE047;
+      box-shadow: 0 0 10px rgba(255, 199, 0, 0.4);
+    }
+
+    .status-entregado {
+      background: var(--success-green-light);
+      color: var(--success-green-text);
+      border-color: #BBF7D0;
+    }
+
+    .status-preparacion {
+      background: var(--warning-amber-light);
+      color: #92400E;
+      border-color: #FDE68A;
+    }
+
+    .status-discrepancia {
+      background: var(--alert-red-light);
+      color: var(--alert-red-text);
+      border-color: #FECACA;
+    }
+
+    /* Stepper Container */
+    .stepper-container {
+      position: relative;
+      padding: 10px 40px 16px;
+    }
+
+    .stepper-track-bg {
+      position: absolute;
+      top: 40px;
+      left: 100px;
+      right: 100px;
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      z-index: 1;
+    }
+
+    .stepper-track-progress {
+      position: absolute;
+      top: 40px;
+      left: 100px;
+      height: 6px;
+      background: linear-gradient(90deg, var(--corp-blue), #2563EB, var(--accent-yellow));
+      border-radius: 4px;
+      z-index: 2;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stepper-steps-wrapper {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .stepper-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 200px;
+    }
+
+    .step-node {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 3.5px solid #CBD5E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+
+    .stepper-step.completed .step-node {
+      border-color: var(--corp-blue);
+      background: #FFFFFF;
+      color: var(--corp-blue);
+      box-shadow: 0 0 0 4px var(--corp-blue-light);
+    }
+
+    .stepper-step.active-transit .step-node {
+      border-color: var(--accent-yellow);
+      background: #FFFBEB;
+      color: var(--accent-yellow-text);
+      transform: scale(1.1);
+      box-shadow: 0 0 0 6px rgba(255, 199, 0, 0.35);
+      animation: nodePulse 1.8s infinite;
+    }
+
+    @keyframes nodePulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(255, 199, 0, 0.25); }
+      50% { box-shadow: 0 0 0 10px rgba(255, 199, 0, 0.5); }
+    }
+
+    .stepper-step.pending .step-node {
+      border-color: #E2E8F0;
+      background: #F8FAFC;
+      color: #94A3B8;
+      opacity: 0.7;
+    }
+
+    .step-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      margin-bottom: 2px;
+    }
+
+    .stepper-step.pending .step-title {
+      color: var(--text-muted);
+    }
+
+    .step-date {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .step-subtext {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .step-badge-status {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 10px;
+    }
+
+    .step-badge-done { background: var(--success-green-light); color: var(--success-green-text); }
+    .step-badge-active { background: var(--accent-yellow-light); color: var(--accent-yellow-text); font-weight: 800; }
+    .step-badge-wait { background: #F1F5F9; color: var(--text-muted); }
+
+    /* Logistic Details Strip */
+    .logistic-strip {
+      background: #F8FAFC;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      padding: 12px 20px;
+      display: grid;
+      grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1.5fr;
+      gap: 16px;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .logistic-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .logistic-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .logistic-val {
+      font-weight: 700;
+      color: var(--primary-navy);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .logistic-val-code {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--corp-blue);
+    }
+
+    /* ==========================================================================
+       4. TWO MAIN GRIDS: ORDERS LIST (TOP) & CHECKLIST DE DESCARGA (BOTTOM)
+       ========================================================================== */
+    .section-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-card-header {
+      padding: 14px 20px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .section-card-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #F8FAFC;
+      border-color: var(--corp-blue);
+      color: var(--corp-blue);
+    }
+
+    .btn-primary {
+      background: var(--corp-blue);
+      border-color: var(--corp-blue);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background: #0040A8;
+      border-color: #0040A8;
+      color: #FFFFFF;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+      max-height: 380px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .table-responsive-lg {
+      max-height: 440px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.82rem;
+    }
+
+    thead th {
+      background: #F8FAFC;
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 10px 14px;
+      border-bottom: 1.5px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    thead th.sortable {
+      cursor: pointer;
+    }
+
+    thead th.sortable:hover {
+      color: var(--corp-blue);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #F1F5F9;
+      transition: background-color 0.15s ease;
+      cursor: pointer;
+    }
+
+    tbody tr:hover {
+      background-color: #F8FAFC;
+    }
+
+    tbody tr.selected-row {
+      background-color: #EFF6FF !important;
+      border-left: 4px solid var(--corp-blue);
+    }
+
+    tbody td {
+      padding: 10px 14px;
+      color: var(--text-main);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .code-cell {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--primary-navy);
+    }
+
+    .category-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      background: #F1F5F9;
+      color: var(--primary-navy);
+    }
+
+    /* Checklist Conditional Formatting */
+    .td-por-recibir {
+      font-weight: 800 !important;
+      font-size: 0.88rem;
+    }
+
+    .highlight-pending {
+      background-color: #FEF9C3 !important;
+      color: #854D0E !important;
+      font-weight: 800 !important;
+      border-radius: 4px;
+      padding: 4px 8px;
+      display: inline-block;
+    }
+
+    .highlight-zero {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Checkbox for Physical Discharge Checklist */
+    .checklist-check {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--corp-blue);
+      cursor: pointer;
+    }
+
+    .verified-row {
+      background-color: #F0FDF4 !important;
+    }
+
+    /* Pagination / Table Footer */
+    .table-footer {
+      padding: 10px 18px;
+      background: #FFFFFF;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-btn {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--corp-blue);
+      color: var(--corp-blue);
+    }
+
+    .page-btn.active {
+      background: var(--corp-blue);
+      border-color: var(--corp-blue);
+      color: #FFFFFF;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Progress mini bar in table */
+    .progress-bar-wrap {
+      width: 90px;
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 3px;
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--success-green);
+      border-radius: 3px;
+    }
+
+    .progress-bar-fill.partial {
+      background: var(--accent-yellow);
+    }
+
+    /* ==========================================================================
+       PRINT STYLES (Optimized for store physical receipt checklist)
+       ========================================================================== */
+    @media print {
+      body {
+        background: #FFFFFF;
+        padding: 0;
+        min-width: 100%;
+      }
+      .top-bar, .kpi-grid, .btn-action, .search-input-wrapper, .pagination-controls, .controls-row, .table-footer {
+        display: none !important;
+      }
+      .dashboard-container {
+        gap: 12px;
+      }
+      .section-card {
+        border: 1px solid #000000;
+        box-shadow: none;
+      }
+      .table-responsive, .table-responsive-lg {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      .print-signatures {
+        display: flex !important;
+        justify-content: space-between;
+        margin-top: 40px;
+        padding: 20px 40px;
+      }
+      .signature-box {
+        width: 250px;
+        border-top: 1px solid #000;
+        text-align: center;
+        font-size: 0.85rem;
+        padding-top: 8px;
+      }
+    }
+
+    .print-signatures {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+  <!-- ==========================================================================
+       1. TOP BAR: HEADER & FILTERS
+       ========================================================================== -->
+  <header class="top-bar">
+    <div class="top-bar-header">
+      <div class="brand-title-group">
+        <div class="brand-accent-line"></div>
+        <div class="brand-titles">
+          <h1>PORTAL DE TRASLADOS <span style="color: var(--accent-yellow); font-weight: 900;">|</span> SEGUIMIENTO A TIENDA</h1>
+          <p>Monitoreo en vivo CEDI &rarr; Sucursales &bull; Extracciones SAP MM (ME2W & ME80FN EKBE)</p>
+        </div>
+      </div>
+      <div class="sap-status-pill">
+        <span class="pulse-dot"></span>
+        <span>SAP S/4HANA Conectado &bull; Ventana M&oacute;vil 45 D&iacute;as &bull; <strong id="totalOrdersCountBadge">1,983</strong> Pedidos</span>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <div class="filter-left-group">
+        <!-- Centro Receptor WERKS -->
+        <div class="filter-box">
+          <label for="werksFilter">Centro Receptor (WERKS)</label>
+          <div class="select-wrapper">
+            <select id="werksFilter" class="custom-select" onchange="onFilterChange()">
+              <option value="ALL">🏢 Todas las Sucursales (635 Centros)</option>
+              <!-- Populated dynamically with active shipment priority -->
+            </select>
+            <span class="select-icon">&#9662;</span>
+          </div>
+        </div>
+
+        <!-- Segmentador por Categoría -->
+        <div class="filter-box">
+          <label>Familia de Pedido</label>
+          <div class="btn-group" id="categoryGroup">
+            <button class="category-btn active" data-cat="ALL" onclick="setCategoryFilter('ALL')">
+              Todas <span class="badge" id="badgeCatAll">0</span>
+            </button>
+            <button class="category-btn" data-cat="🏍️ Motos" onclick="setCategoryFilter('🏍️ Motos')">
+              🏍️ Motos (73) <span class="badge" id="badgeCatMotos">0</span>
+            </button>
+            <button class="category-btn" data-cat="🪖 Cascos" onclick="setCategoryFilter('🪖 Cascos')">
+              🪖 Cascos (67) <span class="badge" id="badgeCatCascos">0</span>
+            </button>
+            <button class="category-btn" data-cat="🚲 Bicicletas" onclick="setCategoryFilter('🚲 Bicicletas')">
+              🚲 Bicis (78) <span class="badge" id="badgeCatBicis">0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtro Rápido Estatus -->
+        <div class="filter-box">
+          <label>Estatus Log&iacute;stico</label>
+          <div class="status-filter-group" id="statusPillsGroup">
+            <button class="status-filter-chip active" data-status="ALL" onclick="setStatusFilter('ALL')">Todos</button>
+            <button class="status-filter-chip" data-status="EN_RUTA" onclick="setStatusFilter('EN_RUTA')">🚚 En Ruta</button>
+            <button class="status-filter-chip" data-status="PREPARACION" onclick="setStatusFilter('PREPARACION')">🟡 En Preparaci&oacute;n</button>
+            <button class="status-filter-chip" data-status="ENTREGADO" onclick="setStatusFilter('ENTREGADO')">✅ Entregado</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buscador Global -->
+      <div class="search-input-wrapper">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" id="globalSearch" class="search-input" placeholder="Buscar EBELN, SKU, Producto..." oninput="onFilterChange()">
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       2. SCORECARDS / TARJETAS KPI (4 COLUMNAS)
+       ========================================================================== -->
+  <section class="kpi-grid">
+    <!-- KPI 1: En Tránsito -->
+    <div class="kpi-card kpi-card-1">
+      <div class="kpi-header">
+        <span class="kpi-title">PIEZAS EN TR&Aacute;NSITO</span>
+        <div class="kpi-icon-badge">&#128666;</div>
+      </div>
+      <div class="kpi-value-row">
+        <span class="kpi-value" id="kpiTransito">0</span>
+        <span class="kpi-unit">pzas</span>
+      </div>
+      <div class="kpi-footer">
+        <span>En cami&oacute;n a tienda (Mov. 641/351)</span>
+        <span class="kpi-pill pill-blue" id="kpiTransitoOrders">0 pedidos</span>
+      </div>
+    </div>
+
+    <!-- KPI 2: Recibido en Tienda -->
+    <div class="kpi-card kpi-card-2">
+      <div class="kpi-header">
+        <span class="kpi-title">RECIBIDO EN TIENDA</span>
+        <div class="kpi-icon-badge">&#128230;</div>
+      </div>
+      <div class="kpi-value-row">
+        <span class="kpi-value" id="kpiRecibido">0</span>
+        <span class="kpi-unit">pzas</span>
+      </div>
+      <div class="kpi-footer">
+        <span>Ingreso f&iacute;sico en almac&eacute;n (Mov. 101)</span>
+        <span class="kpi-pill pill-yellow" id="kpiCumplimientoPct">0% cumplido</span>
+      </div>
+    </div>
+
+    <!-- KPI 3: Pedidos por Surtir -->
+    <div class="kpi-card kpi-card-3">
+      <div class="kpi-header">
+        <span class="kpi-title">PEDIDOS POR SURTIR</span>
+        <div class="kpi-icon-badge">&#9203;</div>
+      </div>
+      <div class="kpi-value-row">
+        <span class="kpi-value" id="kpiPorSurtir">0</span>
+        <span class="kpi-unit">&oacute;rdenes</span>
+      </div>
+      <div class="kpi-footer">
+        <span>En preparaci&oacute;n en CEDI (Sin salida)</span>
+        <span class="kpi-pill pill-red" id="kpiPorSurtirPiezas">0 pzas pend.</span>
+      </div>
+    </div>
+
+    <!-- KPI 4: Sucursal Destino -->
+    <div class="kpi-card kpi-card-4">
+      <div class="kpi-header">
+        <span class="kpi-title">SUCURSAL DESTINO</span>
+        <div class="kpi-icon-badge">&#127970;</div>
+      </div>
+      <div class="kpi-value-row">
+        <span class="kpi-value" id="kpiCentroNombre" style="font-size: 1.55rem;">Todas</span>
+      </div>
+      <div class="kpi-footer">
+        <span id="kpiCentroSub">Red Nacional Macropay</span>
+        <span class="kpi-pill pill-navy" id="kpiCentroTotal">635 centros</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       3. LÍNEA DE TIEMPO / STEPPER DINÁMICO (DELIVERY TRACKER UBER/AMAZON STYLE)
+       ========================================================================== -->
+  <section class="tracking-section" id="trackingSection">
+    <div class="tracking-header">
+      <div class="tracking-title-wrap">
+        <h2>&#128666; SEGUIMIENTO OPERATIVO DEL TRASLADO</h2>
+        <span class="order-tag" id="stepperEbeln">EBELN: -</span>
+        <span class="category-tag" id="stepperCategoria">-</span>
+      </div>
+      <div class="tracking-badges-wrap">
+        <span id="stepperStatusBadge" class="status-badge status-en-ruta">🚚 En Ruta a Tienda</span>
+      </div>
+    </div>
+
+    <!-- Horizontal Stepper Progress -->
+    <div class="stepper-container">
+      <div class="stepper-track-bg"></div>
+      <div class="stepper-track-progress" id="stepperProgressBar" style="width: 66%;"></div>
+
+      <div class="stepper-steps-wrapper">
+        <!-- Paso 1 -->
+        <div class="stepper-step completed" id="stepNode1">
+          <div class="step-node">&#128196;</div>
+          <div class="step-title">Paso 1: Pedido Creado</div>
+          <div class="step-date" id="step1Date">--/--/----</div>
+          <div class="step-subtext">SAP ME2W (AEDAT)</div>
+          <span class="step-badge-status step-badge-done" id="step1Badge">&#10003; Creado</span>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="stepper-step completed" id="stepNode2">
+          <div class="step-node">&#128221;</div>
+          <div class="step-title">Paso 2: Liberaci&oacute;n CEDI</div>
+          <div class="step-date" id="step2Date">--/--/----</div>
+          <div class="step-subtext">Picking y Packing</div>
+          <span class="step-badge-status step-badge-done" id="step2Badge">&#10003; Listo en CEDI</span>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="stepper-step active-transit" id="stepNode3">
+          <div class="step-node">&#128666;</div>
+          <div class="step-title">Paso 3: En Ruta / Tr&aacute;nsito</div>
+          <div class="step-date" id="step3Date">--/--/----</div>
+          <div class="step-subtext">Salida Mov. 641/351</div>
+          <span class="step-badge-status step-badge-active" id="step3Badge">&iexcl;En Cami&oacute;n!</span>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="stepper-step pending" id="stepNode4">
+          <div class="step-node">&#127978;</div>
+          <div class="step-title">Paso 4: Entregado en Tienda</div>
+          <div class="step-date" id="step4Date">--/--/----</div>
+          <div class="step-subtext">Entrada Mov. 101</div>
+          <span class="step-badge-status step-badge-wait" id="step4Badge">Pendiente</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logistic Details Strip -->
+    <div class="logistic-strip">
+      <div class="logistic-item">
+        <span class="logistic-label">Centro Suministrador (CEDI)</span>
+        <span class="logistic-val" id="stepperReswk">-</span>
+      </div>
+      <div class="logistic-item">
+        <span class="logistic-label">Sucursal Destino</span>
+        <span class="logistic-val" id="stepperWerks">-</span>
+      </div>
+      <div class="logistic-item">
+        <span class="logistic-label">Doc. Material Salida</span>
+        <span class="logistic-val logistic-val-code" id="stepperDocSalida">-</span>
+      </div>
+      <div class="logistic-item">
+        <span class="logistic-label">Piezas en la Unidad</span>
+        <span class="logistic-val" id="stepperPiezasUnidad">-</span>
+      </div>
+      <div class="logistic-item">
+        <span class="logistic-label">Progreso de Entrega</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="progress-bar-wrap" style="width: 120px; height: 8px;">
+            <div class="progress-bar-fill" id="stepperBarFill" style="width: 0%;"></div>
+          </div>
+          <span style="font-weight: 800; font-size: 0.8rem; color: var(--primary-navy);" id="stepperPctText">0%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       4. TABLA PRINCIPAL DE PEDIDOS (LISTADO DE ÓRDENES)
+       ========================================================================== -->
+  <section class="section-card">
+    <div class="section-card-header">
+      <div class="section-card-title">
+        <span>&#128221; MONITOREO DE PEDIDOS DE TRASLADO</span>
+        <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);" id="ordersCountTitle">(Mostrando 0 pedidos)</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-action" onclick="exportOrdersToCSV()">
+          <span>&#128229; Exportar CSV</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table id="ordersTable">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="sortOrders('ebeln')">Pedido SAP (EBELN) &#8597;</th>
+            <th>Categor&iacute;a</th>
+            <th class="sortable" onclick="sortOrders('werks')">Centro Destino &#8597;</th>
+            <th class="sortable" onclick="sortOrders('aedat')">F. Creaci&oacute;n (AEDAT) &#8597;</th>
+            <th class="sortable" onclick="sortOrders('fecha_salida')">F. Salida CEDI (BUDAT) &#8597;</th>
+            <th>Estatus Operativo</th>
+            <th style="text-align: center;">Modelos (SKU)</th>
+            <th style="text-align: right;" class="sortable" onclick="sortOrders('cant_en_transito')">En Tr&aacute;nsito &#8597;</th>
+            <th style="text-align: right;">Despachadas / Pedidas</th>
+            <th style="text-align: center;">Acci&oacute;n</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-footer">
+      <span id="ordersPageInfo">P&aacute;gina 1 de 1</span>
+      <div class="pagination-controls">
+        <button class="page-btn" id="btnPrevOrders" onclick="changeOrdersPage(-1)">&larr; Anterior</button>
+        <span id="ordersPageButtons" style="display: inline-flex; gap: 4px;"></span>
+        <button class="page-btn" id="btnNextOrders" onclick="changeOrdersPage(1)">Siguiente &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       5. TABLA DE DETALLE / CHECKLIST DE DESCARGA (CONTENEDOR INFERIOR)
+       ========================================================================== -->
+  <section class="section-card" id="checklistSection">
+    <div class="section-card-header">
+      <div class="section-card-title">
+        <span>&#128230; CHECKLIST DE RECEPCI&Oacute;N | ART&Iacute;CULOS EN LA UNIDAD</span>
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--corp-blue); background: var(--corp-blue-light); padding: 2px 8px; border-radius: 6px;" id="checklistOrderBadge">
+          Pedido: Selecciona una orden
+        </span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-action" onclick="toggleVerifyAll()">
+          <span>&#9745; Marcar Todos Verificados</span>
+        </button>
+        <button class="btn-action btn-primary" onclick="printChecklist()">
+          <span>&#128438; Imprimir Hoja de Descarga</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive table-responsive-lg">
+      <table id="checklistTable">
+        <thead>
+          <tr>
+            <th style="width: 40px; text-align: center;">&#10003;</th>
+            <th>Pos.</th>
+            <th>Material (SKU)</th>
+            <th>Descripci&oacute;n del Material (ME2W)</th>
+            <th style="text-align: center;">U.M.</th>
+            <th style="text-align: right;">Cant. Pedida</th>
+            <th style="text-align: right;">Cant. Despachada</th>
+            <th style="text-align: right;">Cant. Recibida</th>
+            <th style="text-align: right;">Por Recibir (En Ruta)</th>
+            <th>Doc. Salida (641)</th>
+            <th>Doc. Entrada (101)</th>
+            <th>Fecha Recepci&oacute;n</th>
+          </tr>
+        </thead>
+        <tbody id="checklistTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Print Only Signatures Block -->
+    <div class="print-signatures">
+      <div class="signature-box">
+        <strong>Operador de Transporte</strong><br>
+        Nombre, Firma y Placa de Unidad
+      </div>
+      <div class="signature-box">
+        <strong>Gerente / Responsable de Sucursal</strong><br>
+        Nombre, Firma y Sello de Conforme
+      </div>
+    </div>
+
+    <div class="table-footer">
+      <span id="checklistItemsCount">0 art&iacute;culos en la posici&oacute;n</span>
+      <span style="font-weight: 700; color: var(--accent-yellow-text); background: var(--accent-yellow-light); padding: 2px 10px; border-radius: 10px;" id="checklistPendingTotal">
+        Total por recibir: 0 pzas
+      </span>
+    </div>
+  </section>
+
+</div>
+
+<!-- Data File Script -->
+<script src="portal_data.js"></script>
+
+<!-- Main Interactive Dashboard Engine -->
+<script>
+  // State Management
+  let allOrders = [];
+  let filteredOrders = [];
+  let selectedOrder = null;
+  let activeCategory = 'ALL';
+  let activeStatus = 'ALL';
+  let activeWerks = 'ALL';
+  let searchQuery = '';
+  
+  // Pagination
+  let currentPage = 1;
+  const pageSize = 12;
+
+  // Sorting
+  let sortField = 'cant_en_transito';
+  let sortAsc = false;
+
+  // Physical checklist verification cache (session-based)
+  const verifiedChecklist = new Set();
+
+  // Initialization
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.PORTAL_DATA && Array.isArray(window.PORTAL_DATA)) {
+      allOrders = window.PORTAL_DATA;
+    } else {
+      console.warn("PORTAL_DATA not found in window, checking fallback...");
+    }
+
+    populateWerksFilter();
+    updateCategoryBadges();
+    applyFilters();
+
+    // Select the first order that is "En Ruta", or first order
+    const defaultOrder = allOrders.find(o => o.estatus.includes('En Ruta')) || allOrders[0];
+    if (defaultOrder) {
+      selectOrder(defaultOrder.ebeln);
+    }
+  });
+
+  // Populate WERKS Dropdown with smart priority
+  function populateWerksFilter() {
+    const select = document.getElementById('werksFilter');
+    
+    // Group orders and count transit pieces per werks
+    const werksMap = new Map();
+    allOrders.forEach(o => {
+      const w = o.werks;
+      if (!werksMap.has(w)) {
+        werksMap.set(w, { total: 0, inTransit: 0, orders: 0 });
+      }
+      const data = werksMap.get(w);
+      data.total += o.cant_pedida;
+      data.inTransit += o.cant_en_transito;
+      data.orders++;
+    });
+
+    // Sort WERKS: first those with inTransit > 0 descending, then alphabetical
+    const sortedWerks = Array.from(werksMap.keys()).sort((a, b) => {
+      const transA = werksMap.get(a).inTransit;
+      const transB = werksMap.get(b).inTransit;
+      if (transB !== transA) return transB - transA;
+      return a.localeCompare(b);
+    });
+
+    // Populate options
+    sortedWerks.forEach(w => {
+      const info = werksMap.get(w);
+      const opt = document.createElement('option');
+      opt.value = w;
+      if (info.inTransit > 0) {
+        opt.textContent = `🚚 Centro ${w} (¡${info.inTransit} pzas en camino! - ${info.orders} ped.)`;
+      } else {
+        opt.textContent = `🏢 Centro ${w} (${info.orders} pedidos)`;
+      }
+      select.appendChild(opt);
+    });
+  }
+
+  // Update counts on Category Segmenter buttons
+  function updateCategoryBadges() {
+    let motos = 0, cascos = 0, bicis = 0;
+    allOrders.forEach(o => {
+      if (o.ebeln.startsWith('73')) motos++;
+      else if (o.ebeln.startsWith('67')) cascos++;
+      else if (o.ebeln.startsWith('78')) bicis++;
+    });
+    document.getElementById('badgeCatAll').textContent = allOrders.length.toLocaleString();
+    document.getElementById('badgeCatMotos').textContent = motos.toLocaleString();
+    document.getElementById('badgeCatCascos').textContent = cascos.toLocaleString();
+    document.getElementById('badgeCatBicis').textContent = bicis.toLocaleString();
+    document.getElementById('totalOrdersCountBadge').textContent = allOrders.length.toLocaleString();
+  }
+
+  // Set Category Filter
+  function setCategoryFilter(cat) {
+    activeCategory = cat;
+    document.querySelectorAll('#categoryGroup .category-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+    });
+    currentPage = 1;
+    applyFilters();
+  }
+
+  // Set Status Filter
+  function setStatusFilter(status) {
+    activeStatus = status;
+    document.querySelectorAll('#statusPillsGroup .status-filter-chip').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-status') === status);
+    });
+    currentPage = 1;
+    applyFilters();
+  }
+
+  // Handle General Filter Changes
+  function onFilterChange() {
+    activeWerks = document.getElementById('werksFilter').value;
+    searchQuery = document.getElementById('globalSearch').value.trim().toLowerCase();
+    currentPage = 1;
+    applyFilters();
+  }
+
+  // Apply All Filters
+  function applyFilters() {
+    filteredOrders = allOrders.filter(o => {
+      // 1. WERKS
+      if (activeWerks !== 'ALL' && o.werks !== activeWerks) return false;
+
+      // 2. Category
+      if (activeCategory !== 'ALL' && o.categoria !== activeCategory) return false;
+
+      // 3. Status
+      if (activeStatus === 'EN_RUTA' && !o.estatus.includes('En Ruta')) return false;
+      if (activeStatus === 'PREPARACION' && !o.estatus.includes('Preparación')) return false;
+      if (activeStatus === 'ENTREGADO' && !o.estatus.includes('Entregado')) return false;
+
+      // 4. Global Search
+      if (searchQuery) {
+        const matchesEbeln = o.ebeln.toLowerCase().includes(searchQuery);
+        const matchesWerks = o.werks.toLowerCase().includes(searchQuery);
+        const matchesReswk = (o.reswk || '').toLowerCase().includes(searchQuery);
+        const matchesItems = o.items.some(it => 
+          it.matnr.toLowerCase().includes(searchQuery) ||
+          it.maktx.toLowerCase().includes(searchQuery)
+        );
+        if (!matchesEbeln && !matchesWerks && !matchesReswk && !matchesItems) return false;
+      }
+
+      return true;
+    });
+
+    // Update KPIs
+    updateKPIs();
+
+    // Sort Orders
+    sortOrdersArray();
+
+    // Render Table
+    renderOrdersTable();
+
+    // Sincronize stepper with selected order or first visible
+    if (filteredOrders.length > 0) {
+      if (!selectedOrder || !filteredOrders.some(o => o.ebeln === selectedOrder.ebeln)) {
+        selectOrder(filteredOrders[0].ebeln);
+      }
+    } else {
+      clearStepperAndChecklist();
+    }
+  }
+
+  // Re-aggregate and Update KPIs
+  function updateKPIs() {
+    let sumTransito = 0;
+    let sumRecibido = 0;
+    let countPorSurtir = 0;
+    let sumPorSurtirPzas = 0;
+    let sumPedida = 0;
+    let ordersWithTransit = 0;
+
+    filteredOrders.forEach(o => {
+      sumTransito += o.cant_en_transito;
+      sumRecibido += o.cant_recibida;
+      sumPedida += o.cant_pedida;
+      if (o.cant_en_transito > 0) ordersWithTransit++;
+      if (o.estatus.includes('Preparación')) {
+        countPorSurtir++;
+        sumPorSurtirPzas += o.cant_pedida;
+      }
+    });
+
+    const pctCumplimiento = sumPedida > 0 ? Math.round((sumRecibido / sumPedida) * 100) : 0;
+
+    document.getElementById('kpiTransito').textContent = sumTransito.toLocaleString();
+    document.getElementById('kpiTransitoOrders').textContent = `${ordersWithTransit} pedidos`;
+
+    document.getElementById('kpiRecibido').textContent = sumRecibido.toLocaleString();
+    document.getElementById('kpiCumplimientoPct').textContent = `${pctCumplimiento}% entregado`;
+
+    document.getElementById('kpiPorSurtir').textContent = countPorSurtir.toLocaleString();
+    document.getElementById('kpiPorSurtirPiezas').textContent = `${sumPorSurtirPzas.toLocaleString()} pzas pend.`;
+
+    if (activeWerks === 'ALL') {
+      document.getElementById('kpiCentroNombre').textContent = 'Todas';
+      document.getElementById('kpiCentroSub').textContent = 'Red Nacional Macropay';
+      document.getElementById('kpiCentroTotal').textContent = `${filteredOrders.length} pedidos activos`;
+    } else {
+      document.getElementById('kpiCentroNombre').textContent = `Centro ${activeWerks}`;
+      document.getElementById('kpiCentroSub').textContent = 'Sucursal Retail Activa';
+      document.getElementById('kpiCentroTotal').textContent = `${filteredOrders.length} pedidos tienda`;
+    }
+  }
+
+  // Sorting Handler
+  function sortOrders(field) {
+    if (sortField === field) {
+      sortAsc = !sortAsc;
+    } else {
+      sortField = field;
+      sortAsc = true;
+    }
+    sortOrdersArray();
+    renderOrdersTable();
+  }
+
+  function sortOrdersArray() {
+    filteredOrders.sort((a, b) => {
+      let valA = a[sortField];
+      let valB = b[sortField];
+      if (valA === undefined || valA === null) valA = '';
+      if (valB === undefined || valB === null) valB = '';
+
+      if (typeof valA === 'number' && typeof valB === 'number') {
+        return sortAsc ? valA - valB : valB - valA;
+      }
+      return sortAsc ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+    });
+  }
+
+  // Render Orders Table
+  function renderOrdersTable() {
+    const tbody = document.getElementById('ordersTableBody');
+    tbody.innerHTML = '';
+
+    const total = filteredOrders.length;
+    document.getElementById('ordersCountTitle').textContent = `(${total.toLocaleString()} encontrados)`;
+
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const start = (currentPage - 1) * pageSize;
+    const pageItems = filteredOrders.slice(start, start + pageSize);
+
+    if (pageItems.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem;">
+        No se encontraron pedidos con los filtros aplicados.
+      </td></tr>`;
+      renderPagination(0, 1);
+      return;
+    }
+
+    pageItems.forEach(o => {
+      const isSelected = selectedOrder && selectedOrder.ebeln === o.ebeln;
+      const tr = document.createElement('tr');
+      if (isSelected) tr.classList.add('selected-row');
+
+      // Status pill styling
+      let statusClass = 'status-preparacion';
+      if (o.estatus.includes('En Ruta')) statusClass = 'status-en-ruta';
+      else if (o.estatus.includes('Entregado')) statusClass = 'status-entregado';
+      else if (o.estatus.includes('Discrepancia')) statusClass = 'status-discrepancia';
+
+      // Progress percentage
+      const pct = o.cant_pedida > 0 ? Math.min(100, Math.round((o.cant_recibida / o.cant_pedida) * 100)) : 0;
+      const progressClass = pct >= 100 ? '' : 'partial';
+
+      tr.innerHTML = `
+        <td class="code-cell">
+          <span style="display: flex; align-items: center; gap: 6px;">
+            <strong style="color: var(--primary-navy);">${o.ebeln}</strong>
+          </span>
+        </td>
+        <td><span class="category-tag">${o.categoria}</span></td>
+        <td><strong>${o.werks}</strong></td>
+        <td>${formatDate(o.aedat)}</td>
+        <td>${o.fecha_salida ? formatDate(o.fecha_salida) : '<span style="color: var(--text-muted);">Pendiente</span>'}</td>
+        <td><span class="status-badge ${statusClass}">${o.estatus}</span></td>
+        <td style="text-align: center;"><span style="font-weight: 700; background: #F1F5F9; padding: 2px 8px; border-radius: 6px;">${o.total_modelos}</span></td>
+        <td style="text-align: right;">
+          ${o.cant_en_transito > 0 
+            ? `<span class="highlight-pending">&#128666; ${o.cant_en_transito} pzas</span>` 
+            : `<span class="highlight-zero">0</span>`}
+        </td>
+        <td style="text-align: right;">
+          <span>${o.cant_despachada} / ${o.cant_pedida}</span>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill ${progressClass}" style="width: ${pct}%;"></div>
+          </div>
+        </td>
+        <td style="text-align: center;">
+          <button class="btn-action" style="padding: 3px 8px; font-size: 0.72rem;" onclick="event.stopPropagation(); selectOrder('${o.ebeln}')">
+            Detalle &rarr;
+          </button>
+        </td>
+      `;
+
+      tr.onclick = () => selectOrder(o.ebeln);
+      tbody.appendChild(tr);
+    });
+
+    renderPagination(total, totalPages);
+  }
+
+  // Render Pagination
+  function renderPagination(total, totalPages) {
+    document.getElementById('ordersPageInfo').textContent = `Mostrando ${Math.min((currentPage - 1) * pageSize + 1, total)} - ${Math.min(currentPage * pageSize, total)} de ${total.toLocaleString()}`;
+    document.getElementById('btnPrevOrders').disabled = currentPage <= 1;
+    document.getElementById('btnNextOrders').disabled = currentPage >= totalPages;
+
+    const btnsContainer = document.getElementById('ordersPageButtons');
+    btnsContainer.innerHTML = '';
+
+    const minP = Math.max(1, currentPage - 2);
+    const maxP = Math.min(totalPages, currentPage + 2);
+
+    for (let p = minP; p <= maxP; p++) {
+      const btn = document.createElement('button');
+      btn.className = `page-btn ${p === currentPage ? 'active' : ''}`;
+      btn.textContent = p;
+      btn.onclick = () => { currentPage = p; renderOrdersTable(); };
+      btnsContainer.appendChild(btn);
+    }
+  }
+
+  function changeOrdersPage(delta) {
+    currentPage += delta;
+    renderOrdersTable();
+  }
+
+  // Select an Order (Cross-Filtering into Stepper & Checklist)
+  function selectOrder(ebeln) {
+    selectedOrder = allOrders.find(o => o.ebeln === ebeln);
+    if (!selectedOrder) return;
+
+    // Highlight row in table
+    document.querySelectorAll('#ordersTableBody tr').forEach(tr => {
+      tr.classList.remove('selected-row');
+      if (tr.querySelector('.code-cell strong')?.textContent === ebeln) {
+        tr.classList.add('selected-row');
+      }
+    });
+
+    // Update Stepper
+    updateStepper(selectedOrder);
+
+    // Update Checklist Table
+    updateChecklist(selectedOrder);
+  }
+
+  // Update Dynamic Stepper
+  function updateStepper(o) {
+    document.getElementById('stepperEbeln').textContent = `EBELN: ${o.ebeln}`;
+    document.getElementById('stepperCategoria').textContent = o.categoria;
+
+    // Badge
+    const statusBadge = document.getElementById('stepperStatusBadge');
+    statusBadge.textContent = o.estatus;
+    statusBadge.className = 'status-badge';
+    if (o.estatus.includes('En Ruta')) statusBadge.classList.add('status-en-ruta');
+    else if (o.estatus.includes('Entregado')) statusBadge.classList.add('status-entregado');
+    else if (o.estatus.includes('Preparación')) statusBadge.classList.add('status-preparacion');
+    else statusBadge.classList.add('status-discrepancia');
+
+    // Stepper Dates
+    document.getElementById('step1Date').textContent = formatDate(o.fecha_pedido);
+    document.getElementById('step2Date').textContent = o.fecha_liberacion ? formatDate(o.fecha_liberacion) : 'En Proceso';
+    document.getElementById('step3Date').textContent = o.fecha_salida ? formatDate(o.fecha_salida) : 'Pendiente';
+    document.getElementById('step4Date').textContent = o.fecha_entrega ? formatDate(o.fecha_entrega) : 'Pendiente';
+
+    // Step Nodes & Progress line
+    const n1 = document.getElementById('stepNode1');
+    const n2 = document.getElementById('stepNode2');
+    const n3 = document.getElementById('stepNode3');
+    const n4 = document.getElementById('stepNode4');
+    const pBar = document.getElementById('stepperProgressBar');
+
+    // Reset classes
+    [n1, n2, n3, n4].forEach(n => n.className = 'stepper-step');
+
+    if (o.estatus.includes('Entregado')) {
+      n1.className = 'stepper-step completed';
+      n2.className = 'stepper-step completed';
+      n3.className = 'stepper-step completed';
+      n4.className = 'stepper-step completed';
+      pBar.style.width = '100%';
+      document.getElementById('step3Badge').className = 'step-badge-status step-badge-done';
+      document.getElementById('step3Badge').textContent = '✓ Despachado';
+      document.getElementById('step4Badge').className = 'step-badge-status step-badge-done';
+      document.getElementById('step4Badge').textContent = '✓ Recibido Tienda';
+    } else if (o.estatus.includes('En Ruta')) {
+      n1.className = 'stepper-step completed';
+      n2.className = 'stepper-step completed';
+      n3.className = 'stepper-step active-transit';
+      n4.className = 'stepper-step pending';
+      pBar.style.width = '66%';
+      document.getElementById('step3Badge').className = 'step-badge-status step-badge-active';
+      document.getElementById('step3Badge').textContent = '¡En Tránsito!';
+      document.getElementById('step4Badge').className = 'step-badge-status step-badge-wait';
+      document.getElementById('step4Badge').textContent = 'Por Recibir';
+    } else { // En Preparación
+      n1.className = 'stepper-step completed';
+      n2.className = 'stepper-step active-transit';
+      n3.className = 'stepper-step pending';
+      n4.className = 'stepper-step pending';
+      pBar.style.width = '33%';
+      document.getElementById('step2Badge').className = 'step-badge-status step-badge-active';
+      document.getElementById('step2Badge').textContent = 'En Surtido CEDI';
+      document.getElementById('step3Badge').className = 'step-badge-status step-badge-wait';
+      document.getElementById('step3Badge').textContent = 'Sin Despacho';
+      document.getElementById('step4Badge').className = 'step-badge-status step-badge-wait';
+      document.getElementById('step4Badge').textContent = 'Pendiente';
+    }
+
+    // Logistic Strip values
+    document.getElementById('stepperReswk').textContent = o.reswk || 'CEDI CENTRAL';
+    document.getElementById('stepperWerks').textContent = `Centro ${o.werks}`;
+    
+    // Find outbound document
+    const docSalida = o.items.find(i => i.doc_salida)?.doc_salida || 'Sin doc';
+    document.getElementById('stepperDocSalida').textContent = docSalida;
+    document.getElementById('stepperPiezasUnidad').textContent = `${o.cant_despachada} pzas (${o.cant_en_transito} en ruta)`;
+
+    const pct = o.cant_pedida > 0 ? Math.min(100, Math.round((o.cant_recibida / o.cant_pedida) * 100)) : 0;
+    document.getElementById('stepperBarFill').style.width = `${pct}%`;
+    document.getElementById('stepperPctText').textContent = `${pct}%`;
+  }
+
+  // Update Checklist Table
+  function updateChecklist(o) {
+    const tbody = document.getElementById('checklistTableBody');
+    tbody.innerHTML = '';
+
+    document.getElementById('checklistOrderBadge').textContent = `Pedido: ${o.ebeln} • Sucursal: ${o.werks} • ${o.categoria}`;
+    document.getElementById('checklistItemsCount').textContent = `${o.items.length} artículos en la unidad`;
+
+    let totalPending = 0;
+
+    o.items.forEach(it => {
+      totalPending += it.cant_en_transito;
+      const itemKey = `${o.ebeln}-${it.ebelp}`;
+      const isChecked = verifiedChecklist.has(itemKey);
+
+      const tr = document.createElement('tr');
+      if (isChecked) tr.classList.add('verified-row');
+
+      tr.innerHTML = `
+        <td style="text-align: center;">
+          <input type="checkbox" class="checklist-check" ${isChecked ? 'checked' : ''} onchange="toggleVerifyItem('${itemKey}', this)">
+        </td>
+        <td class="code-cell">${it.ebelp}</td>
+        <td class="code-cell" style="color: var(--corp-blue);">${it.matnr}</td>
+        <td><strong style="color: var(--primary-navy);">${it.maktx}</strong></td>
+        <td style="text-align: center;"><span style="background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${it.meins}</span></td>
+        <td style="text-align: right; font-weight: 600;">${it.cant_pedida}</td>
+        <td style="text-align: right; font-weight: 600;">${it.cant_despachada}</td>
+        <td style="text-align: right; font-weight: 600;">${it.cant_recibida}</td>
+        <td style="text-align: right;" class="td-por-recibir">
+          ${it.cant_en_transito > 0 
+            ? `<span class="highlight-pending">&#9888; ${it.cant_en_transito} PENDIENTE</span>` 
+            : `<span class="highlight-zero">&#10003; 0</span>`}
+        </td>
+        <td class="code-cell">${it.doc_salida || '-'}</td>
+        <td class="code-cell">${it.doc_entrada || '-'}</td>
+        <td>${it.fecha_entrada ? formatDate(it.fecha_entrada) : (it.cant_en_transito > 0 ? '<span style="color: var(--accent-yellow-text); font-weight: 700;">En Tránsito</span>' : '-')}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('checklistPendingTotal').textContent = `Total por recibir: ${totalPending} pzas`;
+  }
+
+  // Clear Stepper and Checklist if no order
+  function clearStepperAndChecklist() {
+    document.getElementById('stepperEbeln').textContent = 'Sin órdenes';
+    document.getElementById('stepperCategoria').textContent = '-';
+    document.getElementById('stepperStatusBadge').textContent = 'Sin resultados';
+    document.getElementById('checklistTableBody').innerHTML = '<tr><td colspan="12" style="text-align: center; padding: 20px;">Sin pedidos coincidentes.</td></tr>';
+  }
+
+  // Toggle Single Item Verification
+  function toggleVerifyItem(key, checkbox) {
+    if (checkbox.checked) {
+      verifiedChecklist.add(key);
+      checkbox.closest('tr').classList.add('verified-row');
+    } else {
+      verifiedChecklist.delete(key);
+      checkbox.closest('tr').classList.remove('verified-row');
+    }
+  }
+
+  // Toggle All Items in current checklist
+  function toggleVerifyAll() {
+    if (!selectedOrder) return;
+    const allChecked = selectedOrder.items.every(it => verifiedChecklist.has(`${selectedOrder.ebeln}-${it.ebelp}`));
+    
+    selectedOrder.items.forEach(it => {
+      const key = `${selectedOrder.ebeln}-${it.ebelp}`;
+      if (allChecked) {
+        verifiedChecklist.delete(key);
+      } else {
+        verifiedChecklist.add(key);
+      }
+    });
+
+    updateChecklist(selectedOrder);
+  }
+
+  // Print Checklist for Delivery Truck Unloading
+  function printChecklist() {
+    window.print();
+  }
+
+  // Export Filtered Orders to CSV
+  function exportOrdersToCSV() {
+    if (filteredOrders.length === 0) return;
+    let csv = '\uFEFF'; // UTF-8 BOM
+    csv += 'Pedido_EBELN,Categoria,Centro_WERKS,Fecha_Creacion,Fecha_Salida,Estatus,Modelos,Cant_Pedida,Cant_Despachada,Cant_Recibida,Cant_En_Transito\n';
+
+    filteredOrders.forEach(o => {
+      csv += `"${o.ebeln}","${o.categoria}","${o.werks}","${o.aedat}","${o.fecha_salida || ''}","${o.estatus}",${o.total_modelos},${o.cant_pedida},${o.cant_despachada},${o.cant_recibida},${o.cant_en_transito}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Traslados_SAP_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+  }
+
+  // Helper date formatter DD/MM/YYYY
+  function formatDate(dStr) {
+    if (!dStr) return '-';
+    const parts = dStr.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dStr;
+  }
+</script>
+
+</body>
+</html>

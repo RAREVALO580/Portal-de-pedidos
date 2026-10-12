@@ -1,0 +1,7 @@
+# Entorno temporal de Windows / Office
+~$*
+*.tmp
+
+# Archivos de caché
+.DS_Store
+Thumbs.db
