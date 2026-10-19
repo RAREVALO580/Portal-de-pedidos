@@ -109,30 +109,7 @@
           </div>
         </div>
 
-        <!-- 3. SEGMENTADOR RÁPIDO POR FAMILIA -->
-        <div class="flex flex-col gap-1">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Familia de Pedido</span>
-          <div class="inline-flex bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold" id="categoryGroup">
-            <button onclick="setCategoryFilter('ALL')" data-cat="ALL" class="cat-btn active bg-white text-navy-primary shadow-sm px-3 py-1.5 rounded-md flex items-center gap-1.5 transition">
-              <span>Todas</span>
-              <span id="badgeCatAll" class="bg-blue-50 text-blue-corp text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
-            </button>
-            <button onclick="setCategoryFilter('🏍️ Motos')" data-cat="🏍️ Motos" class="cat-btn text-slate-600 hover:text-navy-primary px-3 py-1.5 rounded-md flex items-center gap-1.5 transition">
-              <span>🏍️ Motos (73)</span>
-              <span id="badgeCatMotos" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
-            </button>
-            <button onclick="setCategoryFilter('🪖 Cascos')" data-cat="🪖 Cascos" class="cat-btn text-slate-600 hover:text-navy-primary px-3 py-1.5 rounded-md flex items-center gap-1.5 transition">
-              <span>🪖 Cascos (67)</span>
-              <span id="badgeCatCascos" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
-            </button>
-            <button onclick="setCategoryFilter('🚲 Bicicletas')" data-cat="🚲 Bicicletas" class="cat-btn text-slate-600 hover:text-navy-primary px-3 py-1.5 rounded-md flex items-center gap-1.5 transition">
-              <span>🚲 Bicis (78)</span>
-              <span id="badgeCatBicis" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 4. FILTRO RÁPIDO ESTATUS -->
+        <!-- 3. FILTRO RÁPIDO ESTATUS -->
         <div class="flex flex-col gap-1">
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Estatus Operativo</span>
           <div class="flex items-center gap-1.5 text-xs font-semibold" id="statusPillsGroup">
@@ -145,13 +122,68 @@
         </div>
       </div>
 
-      <!-- 5. BUSCADOR GLOBAL -->
+      <!-- 4. BUSCADOR GLOBAL -->
       <div class="flex flex-col gap-1 w-full sm:w-auto">
         <label for="searchInput" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Buscador Rápido</label>
         <div class="relative">
           <input type="text" id="searchInput" oninput="handleFilterChange()" placeholder="Buscar EBELN, SKU, Producto..." class="w-full sm:w-60 bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-2 text-xs lg:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-corp/20 focus:border-blue-corp transition">
           <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-slate-400 text-xs">&#128269;</span>
         </div>
+      </div>
+    </div>
+
+    <!-- FAMILIA DE PEDIDO (CUADROS INDEPENDIENTES GRANDES - SIN SUBTOTALES O TOTALES) -->
+    <div class="flex flex-col gap-2 pt-3 border-t border-slate-100">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <span>Familia de Pedido</span>
+          <span class="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold">Selección por Categoría</span>
+        </span>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5" id="categoryGroup">
+        <!-- Cuadro 1: Todas las Familias -->
+        <button type="button" onclick="setCategoryFilter('ALL')" data-cat="ALL" class="cat-card active bg-blue-50/70 border-2 border-blue-corp rounded-xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex items-center gap-3.5 text-left group">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-corp flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+            📦
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-sm lg:text-base font-black text-navy-primary truncate leading-tight">Todas las Familias</span>
+            <span class="text-[11px] font-semibold text-slate-500 mt-0.5">Catálogo Completo</span>
+          </div>
+        </button>
+
+        <!-- Cuadro 2: Motos -->
+        <button type="button" onclick="setCategoryFilter('🏍️ Motos')" data-cat="🏍️ Motos" class="cat-card bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-slate-300 hover:bg-slate-50 cursor-pointer transition-all flex items-center gap-3.5 text-left group">
+          <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+            🏍️
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-sm lg:text-base font-black text-navy-primary truncate leading-tight">Motos</span>
+            <span class="text-[11px] font-semibold text-slate-500 mt-0.5">Prefijo SAP 73...</span>
+          </div>
+        </button>
+
+        <!-- Cuadro 3: Cascos -->
+        <button type="button" onclick="setCategoryFilter('🪖 Cascos')" data-cat="🪖 Cascos" class="cat-card bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-slate-300 hover:bg-slate-50 cursor-pointer transition-all flex items-center gap-3.5 text-left group">
+          <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+            🪖
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-sm lg:text-base font-black text-navy-primary truncate leading-tight">Cascos</span>
+            <span class="text-[11px] font-semibold text-slate-500 mt-0.5">Prefijo SAP 67...</span>
+          </div>
+        </button>
+
+        <!-- Cuadro 4: Bicicletas -->
+        <button type="button" onclick="setCategoryFilter('🚲 Bicicletas')" data-cat="🚲 Bicicletas" class="cat-card bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-slate-300 hover:bg-slate-50 cursor-pointer transition-all flex items-center gap-3.5 text-left group">
+          <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+            🚲
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-sm lg:text-base font-black text-navy-primary truncate leading-tight">Bicicletas</span>
+            <span class="text-[11px] font-semibold text-slate-500 mt-0.5">Prefijo SAP 78...</span>
+          </div>
+        </button>
       </div>
     </div>
   </header>
@@ -739,35 +771,27 @@
     }
 
     /**
-     * Update Category Segmenter Badges
+     * Update Global Header Count (Subtotales y totales removidos de familias a petición)
      */
     function updateCategoryCounts() {
-      let countMotos = 0, countCascos = 0, countBicis = 0;
-      rawDataset.forEach(o => {
-        if (o.ebeln.startsWith('73')) countMotos++;
-        else if (o.ebeln.startsWith('67')) countCascos++;
-        else if (o.ebeln.startsWith('78')) countBicis++;
-      });
-      document.getElementById('badgeCatAll').textContent = rawDataset.length;
-      document.getElementById('badgeCatMotos').textContent = countMotos;
-      document.getElementById('badgeCatCascos').textContent = countCascos;
-      document.getElementById('badgeCatBicis').textContent = countBicis;
-      document.getElementById('headerOrdersCount').textContent = rawDataset.length.toLocaleString();
+      const headerCount = document.getElementById('headerOrdersCount');
+      if (headerCount) headerCount.textContent = rawDataset.length.toLocaleString();
     }
 
     /**
-     * Set Category Filter
+     * Set Category Filter (Cuadros independientes grandes)
      */
     function setCategoryFilter(cat) {
       activeCategory = cat;
-      document.querySelectorAll('#categoryGroup .cat-btn').forEach(btn => {
-        const isActive = btn.getAttribute('data-cat') === cat;
-        if (isActive) {
-          btn.className = "cat-btn active bg-white text-navy-primary shadow-sm px-3 py-1.5 rounded-md flex items-center gap-1.5 transition";
-          btn.querySelector('span:last-child').className = "bg-blue-50 text-blue-corp text-[10px] font-bold px-1.5 py-0.5 rounded-full";
+      document.querySelectorAll('#categoryGroup .cat-card').forEach(card => {
+        const isTarget = card.getAttribute('data-cat') === cat;
+        const iconBox = card.querySelector('div:first-child');
+        if (isTarget) {
+          card.className = "cat-card active bg-blue-50/70 border-2 border-blue-corp rounded-xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex items-center gap-3.5 text-left group";
+          if (iconBox) iconBox.className = "w-12 h-12 rounded-xl bg-blue-100 text-blue-corp flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-xs";
         } else {
-          btn.className = "cat-btn text-slate-600 hover:text-navy-primary px-3 py-1.5 rounded-md flex items-center gap-1.5 transition";
-          btn.querySelector('span:last-child').className = "bg-slate-200 text-slate-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full";
+          card.className = "cat-card bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-slate-300 hover:bg-slate-50 cursor-pointer transition-all flex items-center gap-3.5 text-left group";
+          if (iconBox) iconBox.className = "w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-xs";
         }
       });
       currentPage = 1;
