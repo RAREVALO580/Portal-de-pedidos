@@ -47,26 +47,12 @@
        1. HEADER & GLOBAL FILTERS (DIVISIÓN + SUCURSAL INPUT + CATEGORÍA)
        ========================================================================== -->
   <header class="bg-white rounded-xl border border-slate-200 shadow-card p-5 flex flex-col gap-4">
-    <!-- Top Row: Brand & Status -->
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3.5">
-        <div class="w-1.5 h-11 bg-yellow-accent rounded-full shadow-sm"></div>
-        <div>
-          <h1 class="text-xl lg:text-2xl font-black text-navy-primary tracking-tight flex items-center gap-2">
-            PORTAL DE TRASLADOS <span class="text-yellow-accent font-extrabold">|</span> SEGUIMIENTO A TIENDA
-          </h1>
-          <p class="text-xs lg:text-sm font-medium text-slate-500">
-            Monitoreo en vivo CEDI &rarr; Sucursales &bull; SAP MM (ME2W & ME80FN EKBE) &bull; Directorio Comercial
-          </p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-600">
-        <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-        </span>
-        <span>SAP S/4HANA Activo &bull; Ventana Móvil 45 Días &bull; <strong id="headerOrdersCount" class="text-navy-primary">0</strong> Pedidos</span>
-      </div>
+    <!-- Top Row: Brand -->
+    <div class="flex items-center gap-3.5">
+      <div class="w-1.5 h-8 bg-yellow-accent rounded-full shadow-sm"></div>
+      <h1 class="text-xl lg:text-2xl font-black text-navy-primary tracking-tight flex items-center gap-2">
+        PORTAL DE TRASLADOS <span class="text-yellow-accent font-extrabold">|</span> SEGUIMIENTO A TIENDA
+      </h1>
     </div>
 
     <!-- Controls Row: Filtro División (Desplegable) + Filtro Sucursal (Texto Escrito) + Familias + Estatus + Buscador -->
@@ -139,7 +125,6 @@
           </div>
           <div class="flex flex-col min-w-0">
             <span class="text-sm lg:text-base font-black text-navy-primary truncate leading-tight">Todas las Familias</span>
-            <span class="text-[11px] font-semibold text-slate-500 mt-0.5">Catálogo Completo</span>
           </div>
         </button>
 
@@ -150,7 +135,6 @@
           </div>
           <div class="flex flex-col min-w-0">
             <span class="text-sm lg:text-base font-black text-navy-primary truncate leading-tight">Motos</span>
-            <span class="text-[11px] font-semibold text-slate-500 mt-0.5">Prefijo SAP 73...</span>
           </div>
         </button>
 
@@ -161,7 +145,6 @@
           </div>
           <div class="flex flex-col min-w-0">
             <span class="text-sm lg:text-base font-black text-navy-primary truncate leading-tight">Cascos</span>
-            <span class="text-[11px] font-semibold text-slate-500 mt-0.5">Prefijo SAP 67...</span>
           </div>
         </button>
 
@@ -172,7 +155,6 @@
           </div>
           <div class="flex flex-col min-w-0">
             <span class="text-sm lg:text-base font-black text-navy-primary truncate leading-tight">Bicicletas</span>
-            <span class="text-[11px] font-semibold text-slate-500 mt-0.5">Prefijo SAP 78...</span>
           </div>
         </button>
       </div>
