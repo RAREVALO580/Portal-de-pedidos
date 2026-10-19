@@ -121,15 +121,6 @@
           </div>
         </div>
       </div>
-
-      <!-- 4. BUSCADOR GLOBAL -->
-      <div class="flex flex-col gap-1 w-full sm:w-auto">
-        <label for="searchInput" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Buscador Rápido</label>
-        <div class="relative">
-          <input type="text" id="searchInput" oninput="handleFilterChange()" placeholder="Buscar EBELN, SKU, Producto..." class="w-full sm:w-60 bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-2 text-xs lg:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-corp/20 focus:border-blue-corp transition">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-slate-400 text-xs">&#128269;</span>
-        </div>
-      </div>
     </div>
 
     <!-- FAMILIA DE PEDIDO (CUADROS INDEPENDIENTES GRANDES - SIN SUBTOTALES O TOTALES) -->
@@ -689,7 +680,6 @@
     let storeSearchQuery = '';
     let activeCategory = 'ALL';
     let activeStatus = 'ALL';
-    let globalSearchQuery = '';
     let sortKey = 'cant_en_transito';
     let sortAsc = false;
     let currentPage = 1;
@@ -734,7 +724,14 @@
         if (div === 'Sin División' && divCounts.get(div) === 0) return;
         const opt = document.createElement('option');
         opt.value = div;
-        opt.textContent = `División ${div} (${divCounts.get(div)} pedidos)`;
+        let label = div;
+        if (/^div\s*(\d+)$/i.test(div)) {
+          const num = div.match(/\d+/)[0];
+          label = `División ${num}`;
+        } else if (div !== 'Sin División' && !div.toLowerCase().startsWith('div')) {
+          label = `División ${div}`;
+        }
+        opt.textContent = label;
         select.appendChild(opt);
       });
     }
@@ -821,18 +818,19 @@
     function handleFilterChange() {
       activeDivision = document.getElementById('divisionFilter').value;
       const storeInputEl = document.getElementById('storeInput');
-      storeSearchQuery = storeInputEl.value.trim().toLowerCase();
+      storeSearchQuery = storeInputEl ? storeInputEl.value.trim().toLowerCase() : '';
       
       const clearBtn = document.getElementById('clearStoreBtn');
-      if (storeSearchQuery) {
-        clearBtn.classList.remove('hidden');
-        clearBtn.classList.add('flex');
-      } else {
-        clearBtn.classList.add('hidden');
-        clearBtn.classList.remove('flex');
+      if (clearBtn) {
+        if (storeSearchQuery) {
+          clearBtn.classList.remove('hidden');
+          clearBtn.classList.add('flex');
+        } else {
+          clearBtn.classList.add('hidden');
+          clearBtn.classList.remove('flex');
+        }
       }
 
-      globalSearchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
       currentPage = 1;
       applyFilters();
     }
@@ -860,18 +858,6 @@
         if (activeStatus === 'PREPARACION' && !o.estatus.includes('Preparación')) return false;
         if (activeStatus === 'ENTREGADO' && !o.estatus.includes('Entregado')) return false;
         if (activeStatus === 'DISCREPANCIA' && !o.estatus.includes('Discrepancia')) return false;
-
-        // 5. Global Search Filter
-        if (globalSearchQuery) {
-          const matchEbeln = String(o.ebeln || '').toLowerCase().includes(globalSearchQuery);
-          const matchReswk = String(o.reswk || '').toLowerCase().includes(globalSearchQuery);
-          const matchWerks = String(o.werks || '').toLowerCase().includes(globalSearchQuery);
-          const matchItems = o.items && o.items.some(i => 
-            String(i.matnr || '').toLowerCase().includes(globalSearchQuery) ||
-            String(i.maktx || '').toLowerCase().includes(globalSearchQuery)
-          );
-          if (!matchEbeln && !matchReswk && !matchWerks && !matchItems) return false;
-        }
 
         return true;
       });
