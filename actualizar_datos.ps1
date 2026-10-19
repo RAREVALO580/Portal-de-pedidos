@@ -40,6 +40,34 @@ try {
     $wb2.Close($false)
     Write-Host "✓ ME80FN cargado: $rows2 filas" -ForegroundColor Gray
 
+    # 3. Directorio comercial (Columna C: DIV, Columna H: SUCURSAL)
+    $dirComPath = Join-Path $baseDir "Directorio comercial.xlsx"
+    $storeInfo = @{}
+    if (Test-Path $dirComPath) {
+        $tempCopy = "$env:TEMP\Directorio_copy.xlsx"
+        Copy-Item $dirComPath $tempCopy -Force
+        $wb3 = $excel.Workbooks.Open($tempCopy, [Type]::Missing, $true)
+        $ws3 = $wb3.Sheets.Item(1)
+        $data3 = $ws3.UsedRange.Value2
+        $rows3 = $ws3.UsedRange.Rows.Count
+        $wb3.Close($false)
+        for ($r = 2; $r -le $rows3; $r++) {
+            $c = "$($data3[$r, 1])".Trim()
+            $div = "$($data3[$r, 3])".Trim()
+            $nom = "$($data3[$r, 8])".Trim()
+            if ($c) {
+                $info = @{
+                    division = if ($div) { $div } else { "Sin División" }
+                    sucursal_nombre = $nom
+                }
+                $storeInfo[$c] = $info
+                $cTrim = $c.TrimStart('0')
+                if ($cTrim -ne $c) { $storeInfo[$cTrim] = $info }
+            }
+        }
+        Write-Host "✓ Directorio comercial cargado: $($storeInfo.Keys.Count) tiendas con División" -ForegroundColor Gray
+    }
+
     Write-Host "Indexando movimientos contables e historial de pedidos (EKBE)..." -ForegroundColor Yellow
     $posMovements = @{}
     $orderMovements = @{}
@@ -227,10 +255,18 @@ try {
             $status = "⚠️ Discrepancia"
         }
 
+        $wStr = "$($o.werks)".Trim()
+        $wTrim = $wStr.TrimStart('0')
+        $sInfo = if ($storeInfo.ContainsKey($wStr)) { $storeInfo[$wStr] } elseif ($storeInfo.ContainsKey($wTrim)) { $storeInfo[$wTrim] } else { $null }
+        $divVal = if ($sInfo) { $sInfo.division } else { "Sin División" }
+        $nomVal = if ($sInfo) { $sInfo.sucursal_nombre } else { "Centro $wStr" }
+
         $finalOrders.Add(@{
             ebeln = $ebeln
             reswk = $o.reswk
             werks = $o.werks
+            division = $divVal
+            sucursal_nombre = $nomVal
             aedat = $o.aedat
             categoria = $o.categoria
             total_modelos = $skus.Keys.Count

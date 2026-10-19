@@ -44,7 +44,7 @@
 <body class="min-h-full font-sans text-slate-800 antialiased p-4 lg:p-6 flex flex-col gap-5 max-w-[1860px] mx-auto">
 
   <!-- ==========================================================================
-       1. HEADER & GLOBAL FILTERS
+       1. HEADER & GLOBAL FILTERS (DIVISIÓN + SUCURSAL INPUT + CATEGORÍA)
        ========================================================================== -->
   <header class="bg-white rounded-xl border border-slate-200 shadow-card p-5 flex flex-col gap-4">
     <!-- Top Row: Brand & Status -->
@@ -56,7 +56,7 @@
             PORTAL DE TRASLADOS <span class="text-yellow-accent font-extrabold">|</span> SEGUIMIENTO A TIENDA
           </h1>
           <p class="text-xs lg:text-sm font-medium text-slate-500">
-            Monitoreo en vivo CEDI &rarr; Sucursales &bull; SAP MM (ME2W & ME80FN Historial EKBE)
+            Monitoreo en vivo CEDI &rarr; Sucursales &bull; SAP MM (ME2W & ME80FN EKBE) &bull; Directorio Comercial
           </p>
         </div>
       </div>
@@ -69,17 +69,20 @@
       </div>
     </div>
 
-    <!-- Controls Row: Store Dropdown, Category Buttons, Status Pills, Search -->
+    <!-- Controls Row: Filtro División (Desplegable) + Filtro Sucursal (Texto Escrito) + Familias + Estatus + Buscador -->
     <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100">
       <div class="flex flex-wrap items-center gap-4">
-        <!-- Selector Sucursal (WERKS) -->
+        
+        <!-- 1. FILTRO DESPLEGABLE DE DIVISIÓN (DIRECTORIO COMERCIAL - COLUMNA C) -->
         <div class="flex flex-col gap-1">
-          <label for="storeFilter" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            Sucursal Destino (WERKS)
+          <label for="divisionFilter" class="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+            <span>División Comercial</span>
+            <span class="text-[9px] bg-blue-100 text-blue-corp px-1 rounded font-extrabold">Col. C</span>
           </label>
           <div class="relative">
-            <select id="storeFilter" onchange="handleFilterChange()" class="appearance-none bg-white border border-slate-300 rounded-lg px-3.5 py-2 pr-9 text-xs lg:text-sm font-semibold text-navy-primary focus:outline-none focus:ring-2 focus:ring-blue-corp/20 focus:border-blue-corp transition cursor-pointer min-w-[260px]">
-              <option value="ALL">🏢 Todas las Sucursales</option>
+            <select id="divisionFilter" onchange="handleFilterChange()" class="appearance-none bg-white border border-slate-300 rounded-lg px-3.5 py-2 pr-9 text-xs lg:text-sm font-semibold text-navy-primary focus:outline-none focus:ring-2 focus:ring-blue-corp/20 focus:border-blue-corp transition cursor-pointer min-w-[210px]">
+              <option value="ALL">🏢 Todas las Divisiones</option>
+              <!-- Populated dynamically from Directorio comercial Column C -->
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500 text-xs">
               &#9662;
@@ -87,7 +90,26 @@
           </div>
         </div>
 
-        <!-- Segmentador Rápido por Familia -->
+        <!-- 2. FILTRO DE SUCURSAL DESTINO (INPUT DE TEXTO - NO DESPLEGABLE) -->
+        <div class="flex flex-col gap-1">
+          <label for="storeInput" class="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+            <span>Sucursal Destino</span>
+            <span class="text-[9px] bg-slate-100 text-slate-600 px-1 rounded font-bold">Escribe Centro / Tienda</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-slate-400 text-xs">&#127970;</span>
+            <input type="text" id="storeInput" oninput="handleFilterChange()" list="storeDatalist" placeholder="Escribe Centro o Sucursal (ej. 1003, Mérida)..." class="bg-white border border-slate-300 rounded-lg pl-8 pr-8 py-2 text-xs lg:text-sm font-semibold text-navy-primary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-corp/20 focus:border-blue-corp transition min-w-[260px] sm:min-w-[290px]">
+            <datalist id="storeDatalist">
+              <!-- Populated with store suggestions -->
+            </datalist>
+            <!-- Clear Button -->
+            <button type="button" id="clearStoreBtn" onclick="clearStoreInput()" title="Borrar filtro de sucursal" class="hidden absolute inset-y-0 right-0 items-center pr-2.5 text-slate-400 hover:text-red-alert text-xs font-bold cursor-pointer">
+              &#10005;
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. SEGMENTADOR RÁPIDO POR FAMILIA -->
         <div class="flex flex-col gap-1">
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Familia de Pedido</span>
           <div class="inline-flex bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold" id="categoryGroup">
@@ -110,7 +132,7 @@
           </div>
         </div>
 
-        <!-- Filtro Rápido Estatus -->
+        <!-- 4. FILTRO RÁPIDO ESTATUS -->
         <div class="flex flex-col gap-1">
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Estatus Operativo</span>
           <div class="flex items-center gap-1.5 text-xs font-semibold" id="statusPillsGroup">
@@ -123,11 +145,11 @@
         </div>
       </div>
 
-      <!-- Buscador Rápido -->
+      <!-- 5. BUSCADOR GLOBAL -->
       <div class="flex flex-col gap-1 w-full sm:w-auto">
         <label for="searchInput" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Buscador Rápido</label>
         <div class="relative">
-          <input type="text" id="searchInput" oninput="handleFilterChange()" placeholder="Buscar EBELN, SKU, Producto..." class="w-full sm:w-64 bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-2 text-xs lg:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-corp/20 focus:border-blue-corp transition">
+          <input type="text" id="searchInput" oninput="handleFilterChange()" placeholder="Buscar EBELN, SKU, Producto..." class="w-full sm:w-60 bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-2 text-xs lg:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-corp/20 focus:border-blue-corp transition">
           <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-slate-400 text-xs">&#128269;</span>
         </div>
       </div>
@@ -192,7 +214,7 @@
       </div>
     </div>
 
-    <!-- Card 4: Sucursal Destino (Navy Border) -->
+    <!-- Card 4: Sucursal Destino / División (Navy Border) -->
     <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-navy-primary shadow-card p-5 flex flex-col justify-between hover:shadow-card-hover transition">
       <div class="flex items-start justify-between">
         <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Sucursal Destino</span>
@@ -204,7 +226,7 @@
         </div>
       </div>
       <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-        <span id="kpiCentroSub">Red Nacional Macropay</span>
+        <span id="kpiCentroSub" class="truncate max-w-[170px]">Red Comercial Macropay</span>
         <span id="kpiCentroTotal" class="font-bold text-navy-primary bg-slate-100 px-2 py-0.5 rounded-full">0 pedidos</span>
       </div>
     </div>
@@ -216,14 +238,17 @@
   <section class="bg-white rounded-xl border border-slate-200 shadow-card p-5 lg:p-6 flex flex-col gap-5">
     <!-- Stepper Top Bar -->
     <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <h2 class="text-sm lg:text-base font-extrabold text-navy-primary flex items-center gap-2">
           <span>&#128666; SEGUIMIENTO OPERATIVO DEL TRASLADO</span>
         </h2>
         <span id="stepperEbeln" class="font-mono text-xs font-bold bg-slate-100 text-navy-primary px-2.5 py-1 rounded-md border border-slate-200">
           EBELN: -
         </span>
-        <span id="stepperCategoria" class="text-xs font-bold bg-blue-50 text-blue-corp px-2.5 py-1 rounded-md">
+        <span id="stepperDivisionBadge" class="text-xs font-bold bg-blue-50 text-blue-corp border border-blue-200 px-2.5 py-1 rounded-md">
+          División: -
+        </span>
+        <span id="stepperCategoria" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md">
           -
         </span>
       </div>
@@ -249,7 +274,7 @@
           <span class="text-xs font-bold text-navy-primary">1. Pedido Creado</span>
           <span id="stepDate1" class="font-mono text-[11px] font-semibold text-slate-500 mt-0.5">--/--/----</span>
           <span class="text-[10px] text-slate-400">SAP ME2W (AEDAT)</span>
-          <span id="stepBadge1" class="mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">&#10003; Completado</span>
+          <span id="stepBadge1" class="mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">&#10003; Creado</span>
         </div>
 
         <!-- Step 2: Liberado CEDI -->
@@ -298,8 +323,8 @@
         <span id="stepperWerks" class="font-bold text-navy-primary truncate block">-</span>
       </div>
       <div>
-        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Doc. Material Salida</span>
-        <span id="stepperDocSalida" class="font-mono font-bold text-blue-corp block">-</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">División Comercial</span>
+        <span id="stepperDivision" class="font-bold text-blue-corp truncate block">-</span>
       </div>
       <div>
         <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Piezas en la Unidad</span>
@@ -343,6 +368,7 @@
           <tr>
             <th class="py-3 px-4 cursor-pointer hover:text-blue-corp" onclick="sortOrders('ebeln')">Pedido (EBELN) &#8597;</th>
             <th class="py-3 px-4">Categoría</th>
+            <th class="py-3 px-4 cursor-pointer hover:text-blue-corp" onclick="sortOrders('division')">División &#8597;</th>
             <th class="py-3 px-4 cursor-pointer hover:text-blue-corp" onclick="sortOrders('werks')">Centro Destino &#8597;</th>
             <th class="py-3 px-4 cursor-pointer hover:text-blue-corp" onclick="sortOrders('aedat')">F. Pedido (AEDAT) &#8597;</th>
             <th class="py-3 px-4 cursor-pointer hover:text-blue-corp" onclick="sortOrders('fecha_salida')">Salida CEDI (BUDAT) &#8597;</th>
@@ -440,22 +466,23 @@
     </div>
   </section>
 
+  <!-- External Full Dataset Script if available -->
+  <script src="portal_data.js"></script>
+
   <!-- ==========================================================================
        JAVASCRIPT DATA MODEL & INTERACTIVE LOGIC
        ========================================================================== -->
   <script>
     /**
-     * SIMULATED SAP DATASET (ME2W & ME80FN EKBE)
-     * Meets all constraints:
-     * - Created within last 45 days
-     * - Families: 73... (Motos), 67... (Cascos), 78... (Bicicletas)
-     * - Stores: M001 Mérida, M002 Cancún, M003 Villahermosa, M004 Playa del Carmen, etc.
+     * SIMULATED SAP DATASET (ME2W, ME80FN EKBE & DIRECTORIO COMERCIAL)
      */
     const DEFAULT_SAP_DATASET = [
       {
         ebeln: "7300016441",
         categoria: "🏍️ Motos",
-        werks: "M001 - Mérida Centro",
+        werks: "1003",
+        sucursal_nombre: "MACROPAY MID CALLE 63",
+        division: "Div 1",
         reswk: "0021 CEDI LOGÍSTICA PXGL",
         aedat: "2026-10-05",
         fecha_pedido: "2026-10-05",
@@ -478,7 +505,9 @@
       {
         ebeln: "7300016385",
         categoria: "🏍️ Motos",
-        werks: "M002 - Cancún Plaza",
+        werks: "1150",
+        sucursal_nombre: "MACROPAY CUN PLAZA LAS AMERICAS",
+        division: "Div 2",
         reswk: "0028 CEDI MACROPAY CULIACÁN",
         aedat: "2026-10-02",
         fecha_pedido: "2026-10-02",
@@ -500,7 +529,9 @@
       {
         ebeln: "6700107762",
         categoria: "🪖 Cascos",
-        werks: "M003 - Villahermosa Deportiva",
+        werks: "1230",
+        sucursal_nombre: "MACROPAY VSA DEPORTIVA",
+        division: "Div 3",
         reswk: "0026 CEDI MERIDA MOTOS",
         aedat: "2026-09-28",
         fecha_pedido: "2026-09-28",
@@ -523,7 +554,9 @@
       {
         ebeln: "7800010117",
         categoria: "🚲 Bicicletas",
-        werks: "M001 - Mérida Centro",
+        werks: "1004",
+        sucursal_nombre: "MACROPAY MID CALLE 56",
+        division: "Div 1",
         reswk: "0011 CEDI MERIDA CENTRAL",
         aedat: "2026-09-25",
         fecha_pedido: "2026-09-25",
@@ -545,7 +578,9 @@
       {
         ebeln: "7800010035",
         categoria: "🚲 Bicicletas",
-        werks: "M004 - Playa del Carmen",
+        werks: "1350",
+        sucursal_nombre: "MACROPAY PLAYA CONSTITUYENTES",
+        division: "Div 2",
         reswk: "0025 CEDI MACROPAY GUADALAJARA",
         aedat: "2026-10-08",
         fecha_pedido: "2026-10-08",
@@ -567,7 +602,9 @@
       {
         ebeln: "7300016100",
         categoria: "🏍️ Motos",
-        werks: "M003 - Villahermosa Deportiva",
+        werks: "1450",
+        sucursal_nombre: "MACROPAY PUEBLA CENTRO",
+        division: "Div 5",
         reswk: "0021 CEDI LOGÍSTICA PXGL",
         aedat: "2026-09-20",
         fecha_pedido: "2026-09-20",
@@ -587,31 +624,11 @@
         ]
       },
       {
-        ebeln: "6700110157",
-        categoria: "🪖 Cascos",
-        werks: "M002 - Cancún Plaza",
-        reswk: "0026 CEDI MERIDA MOTOS",
-        aedat: "2026-10-09",
-        fecha_pedido: "2026-10-09",
-        fecha_liberacion: "",
-        fecha_salida: "",
-        fecha_entrega: "",
-        doc_salida_header: "",
-        cant_pedida: 10,
-        cant_despachada: 0,
-        cant_recibida: 0,
-        cant_en_transito: 0,
-        estatus: "🟡 En Preparación CEDI",
-        total_modelos: 2,
-        items: [
-          { ebelp: "10", matnr: "110150", maktx: "CASCO HRO 3400 MODULAR DOBLE VISOR NEGRO", meins: "PZA", cant_pedida: 5, cant_despachada: 0, cant_recibida: 0, cant_en_transito: 0, doc_salida: "", doc_entrada: "", fecha_entrada: "" },
-          { ebelp: "20", matnr: "110151", maktx: "CASCO SHAFT 582 SOLID TITANIO MATE", meins: "PZA", cant_pedida: 5, cant_despachada: 0, cant_recibida: 0, cant_en_transito: 0, doc_salida: "", doc_entrada: "", fecha_entrada: "" }
-        ]
-      },
-      {
         ebeln: "7300017411",
         categoria: "🏍️ Motos",
-        werks: "M004 - Playa del Carmen",
+        werks: "1176",
+        sucursal_nombre: "MACROPAY OAX PLAZA CRISTAL L4",
+        division: "Div 4",
         reswk: "0021 CEDI LOGÍSTICA PXGL",
         aedat: "2026-09-18",
         fecha_pedido: "2026-09-18",
@@ -629,61 +646,18 @@
           { ebelp: "10", matnr: "109990008", maktx: "MOTO BAJAJ DOMINAR 250CC NEGRO BRILLANTE", meins: "PZA", cant_pedida: 2, cant_despachada: 2, cant_recibida: 2, cant_en_transito: 0, doc_salida: "4901128900", doc_entrada: "5000254120", fecha_entrada: "2026-09-25" },
           { ebelp: "20", matnr: "109040012", maktx: "MOTO CARABELA KRONOS 250CC BLANCO PERLA", meins: "PZA", cant_pedida: 2, cant_despachada: 2, cant_recibida: 1, cant_en_transito: 1, doc_salida: "4901128900", doc_entrada: "5000254120", fecha_entrada: "2026-09-25" }
         ]
-      },
-      {
-        ebeln: "7800010890",
-        categoria: "🚲 Bicicletas",
-        werks: "M002 - Cancún Plaza",
-        reswk: "0011 CEDI MERIDA CENTRAL",
-        aedat: "2026-10-06",
-        fecha_pedido: "2026-10-06",
-        fecha_liberacion: "2026-10-08",
-        fecha_salida: "2026-10-09",
-        fecha_entrega: "",
-        doc_salida_header: "4901198002",
-        cant_pedida: 4,
-        cant_despachada: 4,
-        cant_recibida: 0,
-        cant_en_transito: 4,
-        estatus: "🚚 En Ruta a Tienda",
-        total_modelos: 2,
-        items: [
-          { ebelp: "10", matnr: "109520", maktx: "BICI ELÉCTRICA MACROBIKE SH801 NEGRA R20", meins: "PZA", cant_pedida: 2, cant_despachada: 2, cant_recibida: 0, cant_en_transito: 2, doc_salida: "4901198002", doc_entrada: "", fecha_entrada: "" },
-          { ebelp: "20", matnr: "109528", maktx: "BICI ALUBIKE SIERRA R29 ALUMINIO 24V", meins: "PZA", cant_pedida: 2, cant_despachada: 2, cant_recibida: 0, cant_en_transito: 2, doc_salida: "4901198002", doc_entrada: "", fecha_entrada: "" }
-        ]
-      },
-      {
-        ebeln: "6700108920",
-        categoria: "🪖 Cascos",
-        werks: "M001 - Mérida Centro",
-        reswk: "0026 CEDI MERIDA MOTOS",
-        aedat: "2026-09-22",
-        fecha_pedido: "2026-09-22",
-        fecha_liberacion: "2026-09-24",
-        fecha_salida: "2026-09-25",
-        fecha_entrega: "2026-09-27",
-        doc_salida_header: "4901141200",
-        cant_pedida: 6,
-        cant_despachada: 6,
-        cant_recibida: 6,
-        cant_en_transito: 0,
-        estatus: "✅ Entregado en Sucursal",
-        total_modelos: 2,
-        items: [
-          { ebelp: "10", matnr: "110144", maktx: "CASCO XECURO XR921 INT 2XL BLAZE ROJO BR", meins: "PZA", cant_pedida: 3, cant_despachada: 3, cant_recibida: 3, cant_en_transito: 0, doc_salida: "4901141200", doc_entrada: "5000263400", fecha_entrada: "2026-09-27" },
-          { ebelp: "20", matnr: "110145", maktx: "CASCO KOV STEALTH NEGRO MATE CERTIFICADO DOT", meins: "PZA", cant_pedida: 3, cant_despachada: 3, cant_recibida: 3, cant_en_transito: 0, doc_salida: "4901141200", doc_entrada: "5000263400", fecha_entrada: "2026-09-27" }
-        ]
       }
     ];
 
-    // State Variables
+    // State
     let rawDataset = [];
     let filteredOrders = [];
     let selectedOrder = null;
+    let activeDivision = 'ALL';
+    let storeSearchQuery = '';
     let activeCategory = 'ALL';
     let activeStatus = 'ALL';
-    let activeStore = 'ALL';
-    let searchQuery = '';
+    let globalSearchQuery = '';
     let sortKey = 'cant_en_transito';
     let sortAsc = false;
     let currentPage = 1;
@@ -692,54 +666,76 @@
 
     // DOM Ready
     window.addEventListener('DOMContentLoaded', () => {
-      // Check if external full SAP dataset exists (window.PORTAL_DATA), else use embedded dataset
       if (window.PORTAL_DATA && Array.isArray(window.PORTAL_DATA) && window.PORTAL_DATA.length > 0) {
         rawDataset = window.PORTAL_DATA;
       } else {
         rawDataset = DEFAULT_SAP_DATASET;
       }
 
-      // Populate Store Filter
-      populateStoreFilter();
+      populateDivisionDropdown();
+      populateStoreDatalist();
       updateCategoryCounts();
       applyFilters();
     });
 
     /**
-     * Populate Store Dropdown (Prioritizing stores with in-transit shipments)
+     * Populate Division Dropdown (Column C from Directorio comercial)
      */
-    function populateStoreFilter() {
-      const select = document.getElementById('storeFilter');
-      const storeMap = new Map();
+    function populateDivisionDropdown() {
+      const select = document.getElementById('divisionFilter');
+      const divCounts = new Map();
 
       rawDataset.forEach(o => {
-        const store = o.werks;
-        if (!storeMap.has(store)) {
-          storeMap.set(store, { count: 0, inTransit: 0 });
-        }
-        const data = storeMap.get(store);
-        data.count++;
-        data.inTransit += (o.cant_en_transito || 0);
+        const div = o.division || 'Sin División';
+        divCounts.set(div, (divCounts.get(div) || 0) + 1);
       });
 
-      const sortedStores = Array.from(storeMap.keys()).sort((a, b) => {
-        const transA = storeMap.get(a).inTransit;
-        const transB = storeMap.get(b).inTransit;
-        if (transB !== transA) return transB - transA;
+      // Natural Sort for Divisions: Div 1, Div 2, ..., Div 17, Cambaceo, Telemarketing
+      const sortedDivs = Array.from(divCounts.keys()).sort((a, b) => {
+        const numA = parseInt(a.replace(/\D/g, '')) || 999;
+        const numB = parseInt(b.replace(/\D/g, '')) || 999;
+        if (numA !== numB) return numA - numB;
         return a.localeCompare(b);
       });
 
-      sortedStores.forEach(s => {
-        const info = storeMap.get(s);
+      sortedDivs.forEach(div => {
+        if (div === 'Sin División' && divCounts.get(div) === 0) return;
         const opt = document.createElement('option');
-        opt.value = s;
-        if (info.inTransit > 0) {
-          opt.textContent = `🚚 ${s} (¡${info.inTransit} pzas en ruta!)`;
-        } else {
-          opt.textContent = `🏢 ${s} (${info.count} pedidos)`;
-        }
+        opt.value = div;
+        opt.textContent = `División ${div} (${divCounts.get(div)} pedidos)`;
         select.appendChild(opt);
       });
+    }
+
+    /**
+     * Populate Store Datalist suggestions
+     */
+    function populateStoreDatalist() {
+      const datalist = document.getElementById('storeDatalist');
+      datalist.innerHTML = '';
+      const seen = new Set();
+
+      rawDataset.forEach(o => {
+        const key = `${o.werks} - ${o.sucursal_nombre || ''}`.trim();
+        if (!seen.has(key)) {
+          seen.add(key);
+          const opt = document.createElement('option');
+          opt.value = o.werks;
+          opt.label = o.sucursal_nombre ? `${o.werks} - ${o.sucursal_nombre} (${o.division || ''})` : o.werks;
+          datalist.appendChild(opt);
+        }
+      });
+    }
+
+    /**
+     * Clear Store Text Input
+     */
+    function clearStoreInput() {
+      const input = document.getElementById('storeInput');
+      input.value = '';
+      document.getElementById('clearStoreBtn').classList.add('hidden');
+      handleFilterChange();
+      input.focus();
     }
 
     /**
@@ -796,11 +792,23 @@
     }
 
     /**
-     * Global Filter Change
+     * Unified Filter Change Handler
      */
     function handleFilterChange() {
-      activeStore = document.getElementById('storeFilter').value;
-      searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+      activeDivision = document.getElementById('divisionFilter').value;
+      const storeInputEl = document.getElementById('storeInput');
+      storeSearchQuery = storeInputEl.value.trim().toLowerCase();
+      
+      const clearBtn = document.getElementById('clearStoreBtn');
+      if (storeSearchQuery) {
+        clearBtn.classList.remove('hidden');
+        clearBtn.classList.add('flex');
+      } else {
+        clearBtn.classList.add('hidden');
+        clearBtn.classList.remove('flex');
+      }
+
+      globalSearchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
       currentPage = 1;
       applyFilters();
     }
@@ -810,28 +818,35 @@
      */
     function applyFilters() {
       filteredOrders = rawDataset.filter(o => {
-        // 1. Store Filter
-        if (activeStore !== 'ALL' && o.werks !== activeStore) return false;
+        // 1. Division Filter (Dropdown)
+        if (activeDivision !== 'ALL' && (o.division || 'Sin División') !== activeDivision) return false;
 
-        // 2. Category Filter
+        // 2. Store Destination Filter (Text input search)
+        if (storeSearchQuery) {
+          const matchWerks = String(o.werks || '').toLowerCase().includes(storeSearchQuery);
+          const matchStoreName = String(o.sucursal_nombre || '').toLowerCase().includes(storeSearchQuery);
+          if (!matchWerks && !matchStoreName) return false;
+        }
+
+        // 3. Category Filter
         if (activeCategory !== 'ALL' && o.categoria !== activeCategory) return false;
 
-        // 3. Status Filter
+        // 4. Status Filter
         if (activeStatus === 'EN_RUTA' && !o.estatus.includes('En Ruta')) return false;
         if (activeStatus === 'PREPARACION' && !o.estatus.includes('Preparación')) return false;
         if (activeStatus === 'ENTREGADO' && !o.estatus.includes('Entregado')) return false;
         if (activeStatus === 'DISCREPANCIA' && !o.estatus.includes('Discrepancia')) return false;
 
-        // 4. Search Filter
-        if (searchQuery) {
-          const matchEbeln = o.ebeln.toLowerCase().includes(searchQuery);
-          const matchWerks = o.werks.toLowerCase().includes(searchQuery);
-          const matchReswk = (o.reswk || '').toLowerCase().includes(searchQuery);
+        // 5. Global Search Filter
+        if (globalSearchQuery) {
+          const matchEbeln = String(o.ebeln || '').toLowerCase().includes(globalSearchQuery);
+          const matchReswk = String(o.reswk || '').toLowerCase().includes(globalSearchQuery);
+          const matchWerks = String(o.werks || '').toLowerCase().includes(globalSearchQuery);
           const matchItems = o.items && o.items.some(i => 
-            i.matnr.toLowerCase().includes(searchQuery) ||
-            i.maktx.toLowerCase().includes(searchQuery)
+            String(i.matnr || '').toLowerCase().includes(globalSearchQuery) ||
+            String(i.maktx || '').toLowerCase().includes(globalSearchQuery)
           );
-          if (!matchEbeln && !matchWerks && !matchReswk && !matchItems) return false;
+          if (!matchEbeln && !matchReswk && !matchWerks && !matchItems) return false;
         }
 
         return true;
@@ -844,14 +859,12 @@
       sortOrdersList();
       renderMainTable();
 
-      // AUTO-SELECT FIRST ORDER TO ENSURE NO BROKEN EMPTY STATE
+      // AUTO-SELECT FIRST ORDER TO ENSURE NO EMPTY STATE
       if (filteredOrders.length > 0) {
-        // If current selection is still visible, keep it; else select first
         const isCurrentSelectedVisible = selectedOrder && filteredOrders.some(o => o.ebeln === selectedOrder.ebeln);
         if (!isCurrentSelectedVisible) {
           selectOrder(filteredOrders[0].ebeln);
         } else {
-          // Re-render stepper and checklist for currently selected
           updateStepper(selectedOrder);
           updateChecklist(selectedOrder);
         }
@@ -896,16 +909,22 @@
       document.getElementById('kpiPorSurtir').textContent = countPorSurtir.toLocaleString();
       document.getElementById('kpiPorSurtirPiezas').textContent = `${sumPorSurtirPiezas.toLocaleString()} pzas pend.`;
 
-      // Card 4
-      if (activeStore === 'ALL') {
-        document.getElementById('kpiCentroNombre').textContent = 'Todas';
-        document.getElementById('kpiCentroSub').textContent = 'Red Nacional Macropay';
-        document.getElementById('kpiCentroTotal').textContent = `${filteredOrders.length} pedidos activos`;
+      // Card 4: Store / Division Indicator
+      const card4Title = document.getElementById('kpiCentroNombre');
+      const card4Sub = document.getElementById('kpiCentroSub');
+      const card4Total = document.getElementById('kpiCentroTotal');
+
+      if (storeSearchQuery) {
+        card4Title.textContent = `Centro ${storeSearchQuery.toUpperCase()}`;
+        card4Sub.textContent = activeDivision !== 'ALL' ? `División: ${activeDivision}` : 'Filtro por Sucursal';
+      } else if (activeDivision !== 'ALL') {
+        card4Title.textContent = activeDivision;
+        card4Sub.textContent = 'División Comercial Activa';
       } else {
-        document.getElementById('kpiCentroNombre').textContent = activeStore;
-        document.getElementById('kpiCentroSub').textContent = 'Sucursal Retail Activa';
-        document.getElementById('kpiCentroTotal').textContent = `${filteredOrders.length} pedidos tienda`;
+        card4Title.textContent = 'Todas';
+        card4Sub.textContent = 'Red Comercial Macropay';
       }
+      card4Total.textContent = `${filteredOrders.length} pedidos`;
     }
 
     /**
@@ -950,7 +969,7 @@
       const pageOrders = filteredOrders.slice(start, start + pageSize);
 
       if (pageOrders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-slate-400 font-medium">No se encontraron pedidos con los filtros aplicados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" class="py-8 text-center text-slate-400 font-medium">No se encontraron pedidos con los filtros aplicados.</td></tr>`;
         renderPagination(0, 1);
         return;
       }
@@ -976,14 +995,23 @@
           statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">🟡 En Preparación</span>`;
         }
 
-        // Percentage fill
         const pct = o.cant_pedida > 0 ? Math.min(100, Math.round((o.cant_recibida / o.cant_pedida) * 100)) : 0;
 
         tr.innerHTML = `
           <td class="py-3 px-4 font-mono font-bold text-navy-primary">${o.ebeln}</td>
           <td class="py-3 px-4"><span class="bg-slate-100 px-2 py-0.5 rounded font-semibold text-[11px]">${o.categoria}</span></td>
-          <td class="py-3 px-4 font-semibold text-slate-800 truncate max-w-[200px]">${o.werks}</td>
-          <td class="py-3 px-4 font-mono text-slate-600">${formatDate(o.aedat)}</td>
+          <td class="py-3 px-4">
+            <span class="bg-blue-50 text-blue-corp border border-blue-200/60 font-bold px-2 py-0.5 rounded text-[10px]">${o.division || 'Sin Div.'}</span>
+          </td>
+          <td class="py-3 px-4">
+            <div class="flex flex-col">
+              <strong class="text-navy-primary text-xs">${o.werks}</strong>
+              <span class="text-[11px] text-slate-500 truncate max-w-[190px] font-medium" title="${o.sucursal_nombre || ''}">
+                ${o.sucursal_nombre || 'Sucursal Macropay'}
+              </span>
+            </div>
+          </td>
+          <td class="py-3 px-4 font-mono text-slate-600">${formatDate(o.aedat || o.fecha_pedido)}</td>
           <td class="py-3 px-4 font-mono text-slate-600">${o.fecha_salida ? formatDate(o.fecha_salida) : '<span class="text-slate-400">Pendiente</span>'}</td>
           <td class="py-3 px-4">${statusBadge}</td>
           <td class="py-3 px-4 text-center font-bold text-slate-700">${o.total_modelos || (o.items ? o.items.length : 1)}</td>
@@ -1073,6 +1101,7 @@
      */
     function updateStepper(o) {
       document.getElementById('stepperEbeln').textContent = `EBELN: ${o.ebeln}`;
+      document.getElementById('stepperDivisionBadge').textContent = `División: ${o.division || 'Sin Div.'}`;
       document.getElementById('stepperCategoria').textContent = o.categoria;
 
       // Status Badge in Stepper
@@ -1161,8 +1190,8 @@
 
       // Metadata Strip
       document.getElementById('stepperReswk').textContent = o.reswk || 'CEDI CENTRAL';
-      document.getElementById('stepperWerks').textContent = o.werks || '-';
-      document.getElementById('stepperDocSalida').textContent = o.doc_salida_header || (o.items && o.items[0]?.doc_salida) || 'Sin Doc';
+      document.getElementById('stepperWerks').textContent = o.sucursal_nombre ? `${o.werks} - ${o.sucursal_nombre}` : o.werks;
+      document.getElementById('stepperDivision').textContent = o.division || 'Sin División';
       document.getElementById('stepperPiezasUnidad').textContent = `${o.cant_despachada} desp. (${o.cant_en_transito} en ruta)`;
 
       const pct = o.cant_pedida > 0 ? Math.min(100, Math.round((o.cant_recibida / o.cant_pedida) * 100)) : 0;
@@ -1177,7 +1206,7 @@
       const tbody = document.getElementById('checklistTableBody');
       tbody.innerHTML = '';
 
-      document.getElementById('checklistOrderBadge').textContent = `Pedido: ${o.ebeln} • ${o.werks} • ${o.categoria}`;
+      document.getElementById('checklistOrderBadge').textContent = `Pedido: ${o.ebeln} • Centro ${o.werks} ${o.sucursal_nombre ? '(' + o.sucursal_nombre + ')' : ''} • [${o.division || 'Sin Div.'}] • ${o.categoria}`;
       
       const items = o.items || [];
       document.getElementById('checklistItemsCount').textContent = `${items.length} artículos en la unidad`;
@@ -1196,8 +1225,7 @@
           isVerified ? 'bg-emerald-50/70' : 'hover:bg-slate-50'
         }`;
 
-        // CONDITIONAL FORMATTING REQUIREMENT:
-        // If "Por Recibir" > 0, highlight with light yellow background (#FEF9C3) and dark yellow text (#854D0E)
+        // Highlight with light yellow background (#FEF9C3) and dark yellow text (#854D0E)
         const porRecibirCellContent = porRecibir > 0
           ? `<span class="bg-[#FEF9C3] text-[#854D0E] font-extrabold px-2 py-0.5 rounded shadow-sm inline-block">&#9888; ${porRecibir} PENDIENTE</span>`
           : `<span class="text-slate-400 font-medium">&#10003; 0</span>`;
@@ -1235,6 +1263,7 @@
     function clearSelectedOrderView() {
       selectedOrder = null;
       document.getElementById('stepperEbeln').textContent = "Sin Pedidos";
+      document.getElementById('stepperDivisionBadge').textContent = "División: -";
       document.getElementById('stepperCategoria').textContent = "-";
       document.getElementById('stepperStatusBadge').textContent = "Sin Resultados";
       document.getElementById('checklistOrderBadge').textContent = "Pedido: Ninguno seleccionado";
@@ -1277,9 +1306,9 @@
      */
     function exportOrdersToCSV() {
       if (filteredOrders.length === 0) return;
-      let csv = '\uFEFFPedido_EBELN,Categoria,Centro_WERKS,Fecha_Pedido,Salida_CEDI,Estatus,Modelos,Cant_Pedida,Cant_Despachada,Cant_Recibida,Cant_En_Transito\n';
+      let csv = '\uFEFFPedido_EBELN,Categoria,Division,Centro_WERKS,Nombre_Sucursal,Fecha_Pedido,Salida_CEDI,Estatus,Modelos,Cant_Pedida,Cant_Despachada,Cant_Recibida,Cant_En_Transito\n';
       filteredOrders.forEach(o => {
-        csv += `"${o.ebeln}","${o.categoria}","${o.werks}","${o.aedat || o.fecha_pedido}","${o.fecha_salida || ''}","${o.estatus}",${o.total_modelos || o.items.length},${o.cant_pedida},${o.cant_despachada},${o.cant_recibida},${o.cant_en_transito}\n`;
+        csv += `"${o.ebeln}","${o.categoria}","${o.division || ''}","${o.werks}","${o.sucursal_nombre || ''}","${o.aedat || o.fecha_pedido}","${o.fecha_salida || ''}","${o.estatus}",${o.total_modelos || o.items.length},${o.cant_pedida},${o.cant_despachada},${o.cant_recibida},${o.cant_en_transito}\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
