@@ -46,18 +46,26 @@
   <!-- ==========================================================================
        1. HEADER & GLOBAL FILTERS (DIVISIÓN + SUCURSAL INPUT + CATEGORÍA)
        ========================================================================== -->
-  <header class="bg-white rounded-xl border border-slate-200 shadow-card p-5 flex flex-col gap-4">
-    <!-- Top Row: Brand -->
-    <div class="flex items-center gap-3.5">
-      <div class="w-1.5 h-8 bg-yellow-accent rounded-full shadow-sm"></div>
-      <h1 class="text-xl lg:text-2xl font-black text-navy-primary tracking-tight flex items-center gap-2">
-        PORTAL DE TRASLADOS <span class="text-yellow-accent font-extrabold">|</span> SEGUIMIENTO A TIENDA
-      </h1>
+  <header class="bg-white rounded-xl border border-slate-200 shadow-card overflow-hidden flex flex-col">
+    <!-- Top Row: Barra Superior Azul Corporativo con Logo en la parte superior derecha -->
+    <div class="bg-[#0047BB] px-6 py-4 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+      <div class="flex items-center gap-3.5">
+        <div class="w-1.5 h-8 bg-yellow-accent rounded-full shadow-sm"></div>
+        <h1 class="text-xl lg:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          PORTAL DE TRASLADOS <span class="text-yellow-accent font-extrabold">|</span> SEGUIMIENTO A TIENDA
+        </h1>
+      </div>
+      <!-- Logo en parte superior derecha -->
+      <div class="flex items-center">
+        <img src="logo_macropay.png" alt="Macropay" class="h-9 w-auto object-contain" />
+      </div>
     </div>
 
-    <!-- Controls Row: Filtro División (Desplegable) + Filtro Sucursal (Texto Escrito) + Familias + Estatus + Buscador -->
-    <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100">
-      <div class="flex flex-wrap items-center gap-4">
+    <!-- Controls & Categories Container -->
+    <div class="p-5 flex flex-col gap-4">
+      <!-- Controls Row: Filtro División (Desplegable) + Filtro Sucursal (Texto Escrito) + Estatus -->
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-4">
         
         <!-- 1. FILTRO DESPLEGABLE DE DIVISIÓN (DIRECTORIO COMERCIAL - COLUMNA C) -->
         <div class="flex flex-col gap-1">
@@ -158,6 +166,7 @@
           </div>
         </button>
       </div>
+    </div>
     </div>
   </header>
 

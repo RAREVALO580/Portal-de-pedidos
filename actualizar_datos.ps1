@@ -1,4 +1,4 @@
-# Script de Actualización Automática del Portal de Traslados
+﻿# Script de Actualización Automática del Portal de Traslados
 # Lee ME2W.xlsx y ME80FN.xlsx directamente y regenera portal_data.js y dashboard_data.json
 
 Write-Host "==========================================================" -ForegroundColor Cyan
@@ -30,7 +30,7 @@ try {
     $data1 = $ws1.UsedRange.Value2
     $rows1 = $ws1.UsedRange.Rows.Count
     $wb1.Close($false)
-    Write-Host "✓ ME2W cargado: $rows1 filas" -ForegroundColor Gray
+    Write-Host "[OK] ME2W cargado: $rows1 filas" -ForegroundColor Gray
 
     # 2. ME80FN
     $wb2 = $excel.Workbooks.Open($me80fnPath)
@@ -38,7 +38,7 @@ try {
     $data2 = $ws2.UsedRange.Value2
     $rows2 = $ws2.UsedRange.Rows.Count
     $wb2.Close($false)
-    Write-Host "✓ ME80FN cargado: $rows2 filas" -ForegroundColor Gray
+    Write-Host "[OK] ME80FN cargado: $rows2 filas" -ForegroundColor Gray
 
     # 3. Directorio comercial (Columna C: DIV, Columna H: SUCURSAL)
     $dirComPath = Join-Path $baseDir "Directorio comercial.xlsx"
@@ -65,7 +65,7 @@ try {
                 if ($cTrim -ne $c) { $storeInfo[$cTrim] = $info }
             }
         }
-        Write-Host "✓ Directorio comercial cargado: $($storeInfo.Keys.Count) tiendas con División" -ForegroundColor Gray
+        Write-Host "[OK] Directorio comercial cargado: $($storeInfo.Keys.Count) tiendas con División" -ForegroundColor Gray
     }
 
     Write-Host "Indexando movimientos contables e historial de pedidos (EKBE)..." -ForegroundColor Yellow
@@ -288,7 +288,7 @@ try {
     [System.IO.File]::WriteAllText($jsPath, "window.PORTAL_DATA = " + $json + ";", [System.Text.Encoding]::UTF8)
 
     $sw.Stop()
-    Write-Host "`n✓ PROCESO COMPLETADO EN $($sw.Elapsed.TotalSeconds.ToString('F1')) SEGUNDOS" -ForegroundColor Green
+    Write-Host "`n[OK] PROCESO COMPLETADO EN $($sw.Elapsed.TotalSeconds.ToString('F1')) SEGUNDOS" -ForegroundColor Green
     Write-Host "Total de pedidos procesados: $($finalOrders.Count)" -ForegroundColor Cyan
     Write-Host "Los archivos 'portal_data.js' y 'dashboard_data.json' han sido actualizados con éxito." -ForegroundColor Green
 
