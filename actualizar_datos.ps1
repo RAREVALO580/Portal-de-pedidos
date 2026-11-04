@@ -1,4 +1,4 @@
-﻿# Script de Actualización Automática del Portal de Traslados
+# Script de Actualización Automática del Portal de Traslados
 # Lee ME2W.xlsx y ME80FN.xlsx directamente y regenera portal_data.js y dashboard_data.json
 
 Write-Host "==========================================================" -ForegroundColor Cyan
@@ -286,6 +286,93 @@ try {
     $json = $finalOrders | ConvertTo-Json -Depth 5
     [System.IO.File]::WriteAllText($jsonPath, $json, [System.Text.Encoding]::UTF8)
     [System.IO.File]::WriteAllText($jsPath, "window.PORTAL_DATA = " + $json + ";", [System.Text.Encoding]::UTF8)
+
+    # 4. MB52 (Inventario de CEDIS SAP)
+    $mb52Path = Join-Path $baseDir "MB52.xlsx"
+    $invJsonPath = Join-Path $baseDir "inventario_data.json"
+    $invJsPath = Join-Path $baseDir "inventario_data.js"
+
+    if (Test-Path $mb52Path) {
+        Write-Host "Procesando inventario de CEDIS SAP (MB52.xlsx)..." -ForegroundColor Yellow
+        $tempMb52 = "$env:TEMP\MB52_copy.xlsx"
+        Copy-Item $mb52Path $tempMb52 -Force
+        $wb4 = $excel.Workbooks.Open($tempMb52, [Type]::Missing, $true)
+        $ws4 = $wb4.Sheets.Item(1)
+        $data4 = $ws4.UsedRange.Value2
+        $rows4 = $ws4.UsedRange.Rows.Count
+        $wb4.Close($false)
+        Write-Host "[OK] MB52 cargado: $rows4 filas de inventario SAP" -ForegroundColor Gray
+
+        $cediDivMap = @{
+            "0028" = "División 10"; "0029" = "División 10"; "0030" = "División 10";
+            "0025" = "División 20"; "0027" = "División 20";
+            "0011" = "División 30"; "0026" = "División 30"; "0021" = "División 30";
+            "0014" = "División 30"; "0013" = "División 30"; "0017" = "División 30"; "0024" = "División 30"
+        }
+
+        $invGrouped = [System.Collections.Specialized.OrderedDictionary]::new()
+
+        for ($r = 2; $r -le $rows4; $r++) {
+            $cedi = "$($data4.GetValue($r, 1))".Trim()
+            $cediName = "$($data4.GetValue($r, 3))".Trim()
+            $mat = "$($data4.GetValue($r, 4))".Trim()
+            $txt = "$($data4.GetValue($r, 5))".Trim()
+            $sapCat = "$($data4.GetValue($r, 6))".Trim()
+            $val = $data4.GetValue($r, 7)
+            $stock = if ($val -ne $null) { [Convert]::ToDouble($val) } else { 0 }
+            
+            if (-not $mat -or -not $txt) { continue }
+            
+            $key = "$cedi-$mat"
+            if ($invGrouped.Contains($key)) {
+                $invGrouped[$key].stock += $stock
+            } else {
+                $t = $txt.ToUpper()
+                
+                $cat = 'STREET'
+                if ($t -match 'ADV|TRAIL|DAKOTA|SNAKE|RUBAK') { $cat = 'ADVENTURE' }
+                elseif ($t -match 'CHOPPER|DARK EAGLE') { $cat = 'CHOPPER' }
+                elseif ($t -match 'CUATRIMOTO|ATV') { $cat = 'CUATRIMOTO' }
+                elseif ($t -match 'HAWK GT|R250Z|R300Z|RAD HYPER|GTR|SPORT') { $cat = 'DERPORTIVA' }
+                elseif ($t -match 'STARK|HAWK|DIRT|CROSS') { $cat = 'DOBLE PROPOSITO' }
+                elseif ($t -match 'COVALT|MOTOCARRO') { $cat = 'MOTOCARRO' }
+                elseif ($t -match 'SCOOTER|FLUX|RABBIT|METRO|FREEDOM') { $cat = 'SCOOTER' }
+                elseif ($t -match 'ATRIO|HUNTER|DYNAMIK|REVENGE|U2|U5') { $cat = 'SEMIAUTOMATICA' }
+                elseif ($t -match 'CASTORO|SAETA|SB |THUNDER|PULSAR|NOVAK|SYRIUS|THYRON|BEAST|BOXTER|HAMMER|INDY') { $cat = 'STREET' }
+                elseif ($t -match 'JAMBO|MAGMA|BOXER|BM 150') { $cat = 'TRABAJO' }
+                elseif ($sapCat -eq 'BICI' -or $t -match 'BICI') { $cat = 'BICICLETAS' }
+                elseif ($sapCat -eq 'CASC' -or $t -match 'CASCO') { $cat = 'CASCOS' }
+                
+                $prov = 'OTRO'
+                if ($t -match 'BDS|BODESA') { $prov = 'BODESA' }
+                elseif ($t -match 'DINAMO') { $prov = 'DINAMO' }
+                elseif ($t -match 'CARABELA|ISLO|XEVERUS') { $prov = 'MOTO ROAD' }
+                elseif ($t -match 'VELOCI') { $prov = 'VELOCI MOTORS' }
+                elseif ($t -match 'BAJAJ') { $prov = 'BAJAJ' }
+                elseif ($t -match 'YADEA|KIWO|MACROBIKE') { $prov = 'PROVEEDOR BICI' }
+                elseif ($t -match 'XTR|XECURO') { $prov = 'PROVEEDOR CASCOS' }
+
+                $div = if ($cediDivMap.ContainsKey($cedi)) { $cediDivMap[$cedi] } else { "División 10" }
+
+                $invGrouped[$key] = [PSCustomObject]@{
+                    material = $mat
+                    texto = $txt
+                    categoria = $cat
+                    sap_categoria = $sapCat
+                    proveedor = $prov
+                    stock = $stock
+                    division = $div
+                    cedi = $cedi
+                    cedi_nombre = $cediName
+                }
+            }
+        }
+
+        $invJson = $invGrouped.Values | ConvertTo-Json -Depth 3
+        [System.IO.File]::WriteAllText($invJsonPath, $invJson, [System.Text.Encoding]::UTF8)
+        [System.IO.File]::WriteAllText($invJsPath, "window.INVENTARIO_DATA = " + $invJson + ";", [System.Text.Encoding]::UTF8)
+        Write-Host "[OK] 'inventario_data.js' generado con $($invGrouped.Count) materiales de MB52" -ForegroundColor Green
+    }
 
     $sw.Stop()
     Write-Host "`n[OK] PROCESO COMPLETADO EN $($sw.Elapsed.TotalSeconds.ToString('F1')) SEGUNDOS" -ForegroundColor Green

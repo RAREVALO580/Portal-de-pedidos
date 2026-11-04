@@ -732,8 +732,9 @@
     </div>
   </div>
 
-  <!-- External Full Dataset Script if available -->
+  <!-- External Full Dataset Scripts -->
   <script src="portal_data.js"></script>
+  <script src="inventario_data.js"></script>
 
   <!-- ==========================================================================
        JAVASCRIPT DATA MODEL & INTERACTIVE LOGIC
@@ -1010,33 +1011,36 @@
     /* ==========================================================================
        LÓGICA DEL PORTAL DE INVENTARIO | CEDI
        ========================================================================== */
-    const INVENTORY_DATASET = [
-      { material: "108726001", texto: "MOTO BDS STARK 250CC, ROJO", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 6, division: "División 10", cedi: "0028" },
-      { material: "108726002", texto: "MOTO BDS STARK 250CC, GRIS", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 6, division: "División 10", cedi: "0028" },
-      { material: "108956001", texto: "MOTO BDS JAMBO 200CC, GRIS", categoria: "TRABAJO", proveedor: "BODESA", stock: 2, division: "División 10", cedi: "0028" },
-      { material: "109031001", texto: "MOTO BDS HAWK GT 250CC, AZUL", categoria: "DERPORTIVA", proveedor: "BODESA", stock: 1, division: "División 10", cedi: "0028" },
-      { material: "109040001", texto: "MOTO BDS CASTORO 180CC, AZUL", categoria: "STREET", proveedor: "BODESA", stock: 8, division: "División 10", cedi: "0028" },
-      // Backup records for Division 10
-      { material: "109045001", texto: "MOTO BDS PANTERA 150CC, NEGRO", categoria: "STREET", proveedor: "BODESA", stock: 0, division: "División 10", cedi: "0028" },
-      { material: "109050001", texto: "MOTO BDS BULL 250CC, NARANJA", categoria: "CUATRIMOTO", proveedor: "BODESA", stock: 4, division: "División 10", cedi: "0028" },
-      { material: "109055001", texto: "MOTO DINAMO SCORPION 250CC, NEGRO", categoria: "CHOPPER", proveedor: "DINAMO", stock: 0, division: "División 10", cedi: "0028" },
-      { material: "109062001", texto: "MOTO BAJAJ PULSAR NS 200, BLANCO", categoria: "STREET", proveedor: "BAJAJ", stock: 12, division: "División 10", cedi: "0028" },
-      { material: "109100001", texto: "MOTO BDS ADVENTURE 300CC, AMARILLO", categoria: "ADVENTURE", proveedor: "BODESA", stock: 5, division: "División 10", cedi: "0028" },
-      // Backup records for Division 20 and CEDI 0015
-      { material: "109070001", texto: "MOTO VELOCI AGGRESSOR 250CC, ROJO", categoria: "ADVENTURE", proveedor: "VELOCI MOTORS", stock: 4, division: "División 20", cedi: "0015" },
-      { material: "109075001", texto: "MOTO ROAD FORCE 150CC, NEGRO", categoria: "SCOOTER", proveedor: "MOTO ROAD", stock: 2, division: "División 20", cedi: "0015" },
-      { material: "109080001", texto: "MOTO BDS TORNADO 200CC, AZUL", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 7, division: "División 20", cedi: "0015" },
-      // Backup records for Division 30 and CEDI 0030
-      { material: "109088001", texto: "MOTO BAJAJ BOXER 150CC, BLANCO", categoria: "TRABAJO", proveedor: "BAJAJ", stock: 15, division: "División 30", cedi: "0030" },
-      { material: "109092001", texto: "MOTO DINAMO RAYO 110CC, ROJO", categoria: "SEMIAUTOMATICA", proveedor: "DINAMO", stock: 0, division: "División 30", cedi: "0030" },
-      { material: "109095001", texto: "MOTO VELOCI TITANIUM 300CC, GRIS", categoria: "MOTOCARRO", proveedor: "VELOCI MOTORS", stock: 3, division: "División 30", cedi: "0030" }
-    ];
+    const INVENTORY_DATASET = (window.INVENTARIO_DATA && Array.isArray(window.INVENTARIO_DATA) && window.INVENTARIO_DATA.length > 0)
+      ? window.INVENTARIO_DATA
+      : [
+          { material: "108726001", texto: "MOTO BDS STARK 250CC, ROJO", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 0, division: "División 10", cedi: "0028" },
+          { material: "108726002", texto: "MOTO BDS STARK 250CC, GRIS", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 0, division: "División 10", cedi: "0028" },
+          { material: "108721001", texto: "MOTO BDS SAETA 150CC, AZUL", categoria: "STREET", proveedor: "BODESA", stock: 5, division: "División 10", cedi: "0028" },
+          { material: "108813001", texto: "MOTO BDS HAWK 200CC, NEGRO", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 2, division: "División 10", cedi: "0028" },
+          { material: "109234002", texto: "MOTO BDS STARK 300CC, AZUL", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 1, division: "División 10", cedi: "0028" },
+          { material: "109040001", texto: "MOTO BDS CASTORO 180CC, AZUL", categoria: "STREET", proveedor: "BODESA", stock: 0, division: "División 10", cedi: "0028" },
+          { material: "108956001", texto: "MOTO BDS JAMBO 200CC, GRIS", categoria: "TRABAJO", proveedor: "BODESA", stock: 0, division: "División 10", cedi: "0028" },
+          { material: "109031001", texto: "MOTO BDS HAWK GT 250CC, AZUL", categoria: "DERPORTIVA", proveedor: "BODESA", stock: 0, division: "División 10", cedi: "0028" },
+          { material: "109582001", texto: "MOTO VELOCI ATRIO  EVO SPORT 200CC, ROJO", categoria: "SEMIAUTOMATICA", proveedor: "VELOCI MOTORS", stock: 3, division: "División 10", cedi: "0028" },
+          { material: "108635002", texto: "MOTO VELOCI DYNAMIK PRO 200CC, NEGRO", categoria: "SEMIAUTOMATICA", proveedor: "VELOCI MOTORS", stock: 3, division: "División 10", cedi: "0028" },
+          { material: "108668001", texto: "MOTO CARABELA HUNTER 110CC, BLANCO", categoria: "SEMIAUTOMATICA", proveedor: "MOTO ROAD", stock: 2, division: "División 10", cedi: "0028" },
+          { material: "110081001", texto: "MOTO CARABELA ROUTE R SONORA 175CC, AZUL", categoria: "STREET", proveedor: "MOTO ROAD", stock: 1, division: "División 10", cedi: "0028" }
+        ];
 
     const CEDI_NAMES = {
       "0028": "CEDIS MACROPAY CULIACÁN",
-      "0015": "CEDIS MACROPAY GUADALAJARA",
-      "0030": "CEDIS MACROPAY MÉRIDA",
-      "0021": "CEDIS MACROPAY PXGL"
+      "0011": "CEDI MÉRIDA",
+      "0025": "CEDIS MACROPAY GUADALAJARA",
+      "0026": "CEDIS MACROPAY MÉRIDA MOTOS",
+      "0027": "CEDIS MACROPAY SAN LUIS POTOSÍ",
+      "0021": "CE. LOG. PXGL",
+      "0013": "CEDI TUXTLA GUTIÉRREZ",
+      "0014": "CEDI VILLAHERMOSA",
+      "0017": "CEDI OAXACA",
+      "0024": "CEDIS MACROPAY TABASCO",
+      "0029": "CEDI SALTILLO",
+      "0030": "CEDI TIJUANA"
     };
 
     const CATEGORIES = [
@@ -1142,14 +1146,11 @@
       }
 
       let matchedCediName = null;
-      if (val.includes("0028") || val.includes("culiacan") || val.includes("culiacán")) {
-        matchedCediName = "✓ CEDIS MACROPAY CULIACÁN";
-      } else if (val.includes("0015") || val.includes("guadalajara") || val.includes("gdl")) {
-        matchedCediName = "✓ CEDIS MACROPAY GUADALAJARA";
-      } else if (val.includes("0030") || val.includes("merida") || val.includes("mérida")) {
-        matchedCediName = "✓ CEDIS MACROPAY MÉRIDA";
-      } else if (val.includes("0021") || val.includes("pxgl")) {
-        matchedCediName = "✓ CEDIS MACROPAY PXGL";
+      for (const [code, name] of Object.entries(CEDI_NAMES)) {
+        if (code.includes(val) || name.toLowerCase().includes(val)) {
+          matchedCediName = `✓ ${name}`;
+          break;
+        }
       }
 
       if (label && text) {
