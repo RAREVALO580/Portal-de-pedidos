@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-[#f4f6f9]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Inventario | CEDI - Macropay Retail</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brand-blue': '#0f52ba',
+            'navy-primary': '#00296B',
+            'blue-corp': '#0047BB',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-full font-sans text-slate-800 antialiased p-4 lg:p-8 flex flex-col gap-6">
+
+  <!-- ==========================================================================
+       GLOBAL TAB NAVIGATION (CAMBIO DE PESTAÑAS)
+       ========================================================================== -->
+  <nav class="max-w-7xl w-full mx-auto flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-2.5 shadow-sm">
+    <div class="flex items-center gap-2">
+      <!-- Pestaña 1: Portal de Traslados -->
+      <a href="index.html" class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs lg:text-sm font-semibold text-slate-600 hover:text-blue-corp hover:bg-slate-100 transition">
+        <i class="fa-solid fa-truck-fast text-slate-400"></i>
+        <span>Portal de Traslados | Tienda</span>
+      </a>
+
+      <!-- Pestaña 2: Portal de Inventario (Activa) -->
+      <span class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs lg:text-sm font-bold text-white bg-blue-corp shadow-xs">
+        <i class="fa-solid fa-warehouse text-amber-300"></i>
+        <span>Portal de Inventario | CEDIS</span>
+      </span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <img src="logo_macropay.png" alt="Macropay" class="h-7 w-auto object-contain hidden sm:block" />
+    </div>
+  </nav>
+
+  <!-- ==========================================================================
+       CONTENEDOR PRINCIPAL: PORTAL DE INVENTARIO | CEDI (MAX-W-7XL)
+       ========================================================================== -->
+  <main class="max-w-7xl w-full mx-auto bg-white rounded-xl shadow-md border border-slate-200 p-6 lg:p-8 flex flex-col gap-6">
+    
+    <!-- 1. HEADER -->
+    <header class="flex items-center justify-between pb-4 border-b border-slate-200">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2 h-6 bg-amber-500 rounded-sm inline-block"></span>
+        <h1 class="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">
+          PORTAL DE INVENTARIO | CEDI
+        </h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-slate-400 font-medium">v1.2.0</span>
+      </div>
+    </header>
+
+    <!-- 2. FORM CONTROLS & INPUTS (HEADER ROW - 3 COLUMNAS) -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Columna 1: División Comercial -->
+      <div class="flex flex-col gap-1">
+        <label for="invDivisionFilter" class="text-xs font-semibold text-slate-600">
+          División Comercial
+        </label>
+        <div class="relative">
+          <select id="invDivisionFilter" onchange="applyInventoryFilters()" class="w-full appearance-none bg-white border border-slate-300 rounded-lg px-3 py-2 pr-8 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition cursor-pointer">
+            <option value="ALL">Todas las Divisiones</option>
+            <option value="División 10" selected>División 10</option>
+            <option value="División 20">División 20</option>
+            <option value="División 30">División 30</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400 text-xs">
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna 2: CEDI - Escribe Código / Nombre -->
+      <div class="flex flex-col gap-1">
+        <label for="invCediInput" class="text-xs font-semibold text-slate-600">
+          CEDI - Escribe Código / Nombre
+        </label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 text-xs">
+            <i class="fa-solid fa-warehouse"></i>
+          </span>
+          <input type="text" id="invCediInput" oninput="handleCediInput()" placeholder="Ej. 0028, Culiacán..." class="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-8 py-2 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition">
+          <button type="button" id="invClearCediBtn" onclick="clearCediInput()" title="Borrar CEDI" class="hidden absolute inset-y-0 right-0 items-center pr-3 text-slate-400 hover:text-red-500 text-xs cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <!-- Etiqueta de confirmación de CEDI (ej. 0028 -> ✓ CEDIS MACROPAY CULIACÁN) -->
+        <div id="invCediSuccessLabel" class="hidden text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-check text-emerald-500"></i>
+          <span id="invCediSuccessText">✓ CEDIS MACROPAY CULIACÁN</span>
+        </div>
+      </div>
+
+      <!-- Columna 3: Buscar Material / Modelo -->
+      <div class="flex flex-col gap-1">
+        <label for="invSearchInput" class="text-xs font-semibold text-slate-600">
+          Buscar Material / Modelo
+        </label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 text-xs">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input type="text" id="invSearchInput" oninput="applyInventoryFilters()" placeholder="Ej. STARK, 108726001..." class="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-8 py-2 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition">
+          <button type="button" id="invClearSearchBtn" onclick="clearSearchInput()" title="Borrar búsqueda" class="hidden absolute inset-y-0 right-0 items-center pr-3 text-slate-400 hover:text-red-500 text-xs cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. FILTRO CATEGORÍA (MULTI-SELECT PILLS) -->
+    <section class="flex flex-col gap-2 pt-2 border-t border-slate-100">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+          <i class="fa-solid fa-tags text-slate-400"></i>
+          <span>Filtro Categoría</span>
+        </span>
+        <button type="button" onclick="clearCategoryPills()" class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition">
+          Limpiar
+        </button>
+      </div>
+      <div class="flex flex-wrap items-center gap-2" id="categoryPillsGroup">
+        <!-- Pills: ADVENTURE, CHOPPER, CUATRIMOTO, DERPORTIVA, DOBLE PROPOSITO, MOTOCARRO, SCOOTER, SEMIAUTOMATICA, STREET, TRABAJO -->
+      </div>
+    </section>
+
+    <!-- 4. FILTRO POR PROVEEDOR (MULTI-SELECT PILLS - BODESA ACTIVO POR DEFECTO) -->
+    <section class="flex flex-col gap-2 pt-2 border-t border-slate-100">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+          <i class="fa-solid fa-industry text-slate-400"></i>
+          <span>Filtro por Proveedor</span>
+        </span>
+        <button type="button" onclick="clearProviderPills()" class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition">
+          Limpiar
+        </button>
+      </div>
+      <div class="flex flex-wrap items-center gap-2" id="providerPillsGroup">
+        <!-- Pills: BODESA, DINAMO, MOTO ROAD, VELOCI MOTORS, BAJAJ -->
+      </div>
+    </section>
+
+    <!-- 5. KPI CARDS SECTION (3 TARJETAS CON BORDE IZQUIERDO DE 4PX) -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+      <!-- Card 1: STOCK TOTAL (Borde Azul #2563eb) -->
+      <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-blue-600 p-4 shadow-xs flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Stock Total</span>
+          <span class="w-8 h-8 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-boxes-stacked"></i>
+          </span>
+        </div>
+        <div class="mt-2">
+          <span id="kpiStockTotal" class="text-3xl font-extrabold text-slate-800 tracking-tight">0</span>
+          <span class="text-xs font-medium text-slate-400 ml-1">piezas</span>
+        </div>
+      </div>
+
+      <!-- Card 2: MODELOS (Borde Ámbar #f59e0b) -->
+      <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-amber-500 p-4 shadow-xs flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Modelos</span>
+          <span class="w-8 h-8 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-motorcycle"></i>
+          </span>
+        </div>
+        <div class="mt-2">
+          <span id="kpiModelosTotal" class="text-3xl font-extrabold text-slate-800 tracking-tight">0</span>
+          <span class="text-xs font-medium text-slate-400 ml-1">únicos</span>
+        </div>
+      </div>
+
+      <!-- Card 3: BAJO / SIN STOCK (Borde Rojo #ef4444) -->
+      <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-red-500 p-4 shadow-xs flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Bajo / Sin Stock</span>
+          <span class="w-8 h-8 rounded-md bg-red-50 text-red-600 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </span>
+        </div>
+        <div class="mt-2">
+          <span id="kpiBajoSinStock" class="text-3xl font-extrabold text-red-600 tracking-tight">0</span>
+          <span class="text-xs font-medium text-slate-400 ml-1">artículos (&le; 2)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. INTERACTIVE TABLE SECTION -->
+    <section class="flex flex-col gap-3 pt-2">
+      <!-- Visual Status Row: Semáforo / Leyenda y conteo de registros -->
+      <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex flex-wrap items-center gap-2 text-slate-600">
+          <span class="font-semibold text-slate-500 mr-1">Estatus Stock:</span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#fff5f5] text-[#e03131] border border-[#ffc9c9]">
+            🔴 Sin Stock (0)
+          </span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#fff0f6] text-[#d6336c] border border-[#ffdeeb]">
+            🟠 Bajo (1-2)
+          </span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#fff9db] text-[#f59f00] border border-[#ffe3e3]">
+            🟡 Medio (3-6)
+          </span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#e6f7ed] text-[#1e7e34] border border-[#c3ebd6]">
+            🟢 Alto (7+)
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span id="invRecordCount" class="font-bold text-xs bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-full">
+            0 registros
+          </span>
+        </div>
+      </div>
+
+      <!-- Tabla Responsiva -->
+      <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-xs">
+        <table class="w-full text-left border-collapse text-xs lg:text-sm">
+          <thead>
+            <tr class="bg-blue-600 text-white font-bold tracking-wider uppercase text-[11px] select-none">
+              <th onclick="toggleSort('material')" class="py-3 px-4 cursor-pointer hover:bg-blue-700 transition">
+                <div class="flex items-center gap-2">
+                  <span>Material</span>
+                  <i id="sortIcon-material" class="fa-solid fa-sort text-blue-200 text-xs"></i>
+                </div>
+              </th>
+              <th onclick="toggleSort('texto')" class="py-3 px-4 cursor-pointer hover:bg-blue-700 transition">
+                <div class="flex items-center gap-2">
+                  <span>Texto breve de material</span>
+                  <i id="sortIcon-texto" class="fa-solid fa-sort text-blue-200 text-xs"></i>
+                </div>
+              </th>
+              <th class="py-3 px-4">
+                <span>Categoría</span>
+              </th>
+              <th class="py-3 px-4">
+                <span>Proveedor</span>
+              </th>
+              <th onclick="toggleSort('stock')" class="py-3 px-4 text-center cursor-pointer hover:bg-blue-700 transition">
+                <div class="flex items-center justify-center gap-2">
+                  <span>Stock Actual</span>
+                  <i id="sortIcon-stock" class="fa-solid fa-sort text-blue-200 text-xs"></i>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody" class="divide-y divide-slate-200 bg-white text-slate-700">
+            <!-- Filas dinámicas -->
+          </tbody>
+          <tfoot>
+            <tr class="bg-slate-100/90 font-bold text-slate-800 border-t-2 border-slate-300 text-xs lg:text-sm">
+              <td colspan="4" class="py-3 px-4 text-right uppercase tracking-wider">
+                Total Stock Disponible:
+              </td>
+              <td id="invTableFooterTotal" class="py-3 px-4 text-center text-blue-700 font-extrabold text-base">
+                0
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       JAVASCRIPT DATA & INTERACTIVE LOGIC
+       ========================================================================== -->
+  <script>
+    /**
+     * Hardcoded Mock Dataset (Exact prompt records + backup records for Division 20/30 & other CEDIs)
+     */
+    const INVENTORY_DATASET = [
+      { material: "108726001", texto: "MOTO BDS STARK 250CC, ROJO", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 6, division: "División 10", cedi: "0028" },
+      { material: "108726002", texto: "MOTO BDS STARK 250CC, GRIS", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 6, division: "División 10", cedi: "0028" },
+      { material: "108956001", texto: "MOTO BDS JAMBO 200CC, GRIS", categoria: "TRABAJO", proveedor: "BODESA", stock: 2, division: "División 10", cedi: "0028" },
+      { material: "109031001", texto: "MOTO BDS HAWK GT 250CC, AZUL", categoria: "DERPORTIVA", proveedor: "BODESA", stock: 1, division: "División 10", cedi: "0028" },
+      { material: "109040001", texto: "MOTO BDS CASTORO 180CC, AZUL", categoria: "STREET", proveedor: "BODESA", stock: 8, division: "División 10", cedi: "0028" },
+      // Backup records for Division 10
+      { material: "109045001", texto: "MOTO BDS PANTERA 150CC, NEGRO", categoria: "STREET", proveedor: "BODESA", stock: 0, division: "División 10", cedi: "0028" },
+      { material: "109050001", texto: "MOTO BDS BULL 250CC, NARANJA", categoria: "CUATRIMOTO", proveedor: "BODESA", stock: 4, division: "División 10", cedi: "0028" },
+      { material: "109055001", texto: "MOTO DINAMO SCORPION 250CC, NEGRO", categoria: "CHOPPER", proveedor: "DINAMO", stock: 0, division: "División 10", cedi: "0028" },
+      { material: "109062001", texto: "MOTO BAJAJ PULSAR NS 200, BLANCO", categoria: "STREET", proveedor: "BAJAJ", stock: 12, division: "División 10", cedi: "0028" },
+      { material: "109100001", texto: "MOTO BDS ADVENTURE 300CC, AMARILLO", categoria: "ADVENTURE", proveedor: "BODESA", stock: 5, division: "División 10", cedi: "0028" },
+      // Backup records for Division 20 and CEDI 0015
+      { material: "109070001", texto: "MOTO VELOCI AGGRESSOR 250CC, ROJO", categoria: "ADVENTURE", proveedor: "VELOCI MOTORS", stock: 4, division: "División 20", cedi: "0015" },
+      { material: "109075001", texto: "MOTO ROAD FORCE 150CC, NEGRO", categoria: "SCOOTER", proveedor: "MOTO ROAD", stock: 2, division: "División 20", cedi: "0015" },
+      { material: "109080001", texto: "MOTO BDS TORNADO 200CC, AZUL", categoria: "DOBLE PROPOSITO", proveedor: "BODESA", stock: 7, division: "División 20", cedi: "0015" },
+      // Backup records for Division 30 and CEDI 0030
+      { material: "109088001", texto: "MOTO BAJAJ BOXER 150CC, BLANCO", categoria: "TRABAJO", proveedor: "BAJAJ", stock: 15, division: "División 30", cedi: "0030" },
+      { material: "109092001", texto: "MOTO DINAMO RAYO 110CC, ROJO", categoria: "SEMIAUTOMATICA", proveedor: "DINAMO", stock: 0, division: "División 30", cedi: "0030" },
+      { material: "109095001", texto: "MOTO VELOCI TITANIUM 300CC, GRIS", categoria: "MOTOCARRO", proveedor: "VELOCI MOTORS", stock: 3, division: "División 30", cedi: "0030" }
+    ];
+
+    /**
+     * Recognized CEDIs Dictionary
+     */
+    const CEDI_NAMES = {
+      "0028": "CEDIS MACROPAY CULIACÁN",
+      "0015": "CEDIS MACROPAY GUADALAJARA",
+      "0030": "CEDIS MACROPAY MÉRIDA",
+      "0021": "CEDIS MACROPAY PXGL"
+    };
+
+    /**
+     * Categories and Providers Lists
+     */
+    const CATEGORIES = [
+      "ADVENTURE", "CHOPPER", "CUATRIMOTO", "DERPORTIVA", 
+      "DOBLE PROPOSITO", "MOTOCARRO", "SCOOTER", "SEMIAUTOMATICA", 
+      "STREET", "TRABAJO"
+    ];
+
+    const PROVIDERS = [
+      "BODESA", "DINAMO", "MOTO ROAD", "VELOCI MOTORS", "BAJAJ"
+    ];
+
+    // State Variables
+    const selectedCategories = new Set();
+    const selectedProviders = new Set(["BODESA"]); // BODESA starts active by default
+    let sortColumn = "material";
+    let sortDirection = "asc"; // 'asc' or 'desc'
+    let currentFilteredData = [];
+
+    // DOM Ready Initialization
+    document.addEventListener("DOMContentLoaded", () => {
+      renderCategoryPills();
+      renderProviderPills();
+      applyInventoryFilters();
+    });
+
+    /**
+     * Render Category Pills
+     */
+    function renderCategoryPills() {
+      const container = document.getElementById("categoryPillsGroup");
+      container.innerHTML = "";
+
+      CATEGORIES.forEach(cat => {
+        const isActive = selectedCategories.has(cat);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = cat;
+        btn.className = `px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+          isActive 
+            ? "bg-[#0f52ba] text-white border-[#0f52ba] shadow-xs" 
+            : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200 hover:text-slate-800"
+        }`;
+        btn.onclick = () => toggleCategory(cat);
+        container.appendChild(btn);
+      });
+    }
+
+    /**
+     * Render Provider Pills
+     */
+    function renderProviderPills() {
+      const container = document.getElementById("providerPillsGroup");
+      container.innerHTML = "";
+
+      PROVIDERS.forEach(prov => {
+        const isActive = selectedProviders.has(prov);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = prov;
+        btn.className = `px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+          isActive 
+            ? "bg-[#0f52ba] text-white border-[#0f52ba] shadow-xs" 
+            : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200 hover:text-slate-800"
+        }`;
+        btn.onclick = () => toggleProvider(prov);
+        container.appendChild(btn);
+      });
+    }
+
+    /**
+     * Toggle Category Selection
+     */
+    function toggleCategory(cat) {
+      if (selectedCategories.has(cat)) {
+        selectedCategories.delete(cat);
+      } else {
+        selectedCategories.add(cat);
+      }
+      renderCategoryPills();
+      applyInventoryFilters();
+    }
+
+    /**
+     * Clear Category Selection
+     */
+    function clearCategoryPills() {
+      selectedCategories.clear();
+      renderCategoryPills();
+      applyInventoryFilters();
+    }
+
+    /**
+     * Toggle Provider Selection
+     */
+    function toggleProvider(prov) {
+      if (selectedProviders.has(prov)) {
+        selectedProviders.delete(prov);
+      } else {
+        selectedProviders.add(prov);
+      }
+      renderProviderPills();
+      applyInventoryFilters();
+    }
+
+    /**
+     * Clear Provider Selection
+     */
+    function clearProviderPills() {
+      selectedProviders.clear();
+      renderProviderPills();
+      applyInventoryFilters();
+    }
+
+    /**
+     * CEDI Input Event & Label Feedback
+     */
+    function handleCediInput() {
+      const input = document.getElementById("invCediInput");
+      const val = input.value.trim().toLowerCase();
+      const clearBtn = document.getElementById("invClearCediBtn");
+      const label = document.getElementById("invCediSuccessLabel");
+      const text = document.getElementById("invCediSuccessText");
+
+      if (val) {
+        clearBtn.classList.remove("hidden");
+        clearBtn.classList.add("flex");
+      } else {
+        clearBtn.classList.add("hidden");
+        clearBtn.classList.remove("flex");
+      }
+
+      // Check known CEDIs
+      let matchedCediName = null;
+      if (val.includes("0028") || val.includes("culiacan") || val.includes("culiacán")) {
+        matchedCediName = "✓ CEDIS MACROPAY CULIACÁN";
+      } else if (val.includes("0015") || val.includes("guadalajara") || val.includes("gdl")) {
+        matchedCediName = "✓ CEDIS MACROPAY GUADALAJARA";
+      } else if (val.includes("0030") || val.includes("merida") || val.includes("mérida")) {
+        matchedCediName = "✓ CEDIS MACROPAY MÉRIDA";
+      } else if (val.includes("0021") || val.includes("pxgl")) {
+        matchedCediName = "✓ CEDIS MACROPAY PXGL";
+      }
+
+      if (matchedCediName) {
+        text.textContent = matchedCediName;
+        label.classList.remove("hidden");
+        label.classList.add("flex");
+      } else {
+        label.classList.add("hidden");
+        label.classList.remove("flex");
+      }
+
+      applyInventoryFilters();
+    }
+
+    function clearCediInput() {
+      const input = document.getElementById("invCediInput");
+      input.value = "";
+      handleCediInput();
+      input.focus();
+    }
+
+    function clearSearchInput() {
+      const input = document.getElementById("invSearchInput");
+      input.value = "";
+      document.getElementById("invClearSearchBtn").classList.add("hidden");
+      applyInventoryFilters();
+      input.focus();
+    }
+
+    /**
+     * Apply Filters, Sort, and Render
+     */
+    function applyInventoryFilters() {
+      const divisionVal = document.getElementById("invDivisionFilter").value;
+      const cediVal = document.getElementById("invCediInput").value.trim().toLowerCase();
+      const searchVal = document.getElementById("invSearchInput").value.trim().toLowerCase();
+      const clearSearchBtn = document.getElementById("invClearSearchBtn");
+
+      if (searchVal) {
+        clearSearchBtn.classList.remove("hidden");
+        clearSearchBtn.classList.add("flex");
+      } else {
+        clearSearchBtn.classList.add("hidden");
+        clearSearchBtn.classList.remove("flex");
+      }
+
+      currentFilteredData = INVENTORY_DATASET.filter(item => {
+        // 1. Division Filter
+        if (divisionVal !== "ALL" && item.division !== divisionVal) {
+          return false;
+        }
+
+        // 2. CEDI Filter
+        if (cediVal) {
+          const matchCode = item.cedi && item.cedi.toLowerCase().includes(cediVal);
+          const cediName = (CEDI_NAMES[item.cedi] || "").toLowerCase();
+          const matchName = cediName.includes(cediVal);
+          if (!matchCode && !matchName) return false;
+        }
+
+        // 3. Search Filter (Material or Texto)
+        if (searchVal) {
+          const matchMat = item.material.toLowerCase().includes(searchVal);
+          const matchTxt = item.texto.toLowerCase().includes(searchVal);
+          if (!matchMat && !matchTxt) return false;
+        }
+
+        // 4. Category Pills (If none selected, show all)
+        if (selectedCategories.size > 0 && !selectedCategories.has(item.categoria)) {
+          return false;
+        }
+
+        // 5. Provider Pills (If none selected, show all)
+        if (selectedProviders.size > 0 && !selectedProviders.has(item.proveedor)) {
+          return false;
+        }
+
+        return true;
+      });
+
+      // Sort
+      sortInventoryData();
+
+      // Update KPIs & Render Table
+      updateKPIs();
+      renderTable();
+    }
+
+    /**
+     * Sort Logic
+     */
+    function toggleSort(col) {
+      if (sortColumn === col) {
+        sortDirection = sortDirection === "asc" ? "desc" : "asc";
+      } else {
+        sortColumn = col;
+        sortDirection = "asc";
+      }
+
+      updateSortIcons();
+      sortInventoryData();
+      renderTable();
+    }
+
+    function updateSortIcons() {
+      const cols = ["material", "texto", "stock"];
+      cols.forEach(c => {
+        const icon = document.getElementById(`sortIcon-${c}`);
+        if (!icon) return;
+        if (sortColumn === c) {
+          icon.className = sortDirection === "asc" ? "fa-solid fa-sort-up text-white text-xs" : "fa-solid fa-sort-down text-white text-xs";
+        } else {
+          icon.className = "fa-solid fa-sort text-blue-200 text-xs";
+        }
+      });
+    }
+
+    function sortInventoryData() {
+      currentFilteredData.sort((a, b) => {
+        let valA = a[sortColumn];
+        let valB = b[sortColumn];
+
+        if (sortColumn === "stock") {
+          return sortDirection === "asc" ? valA - valB : valB - valA;
+        }
+
+        valA = String(valA).toLowerCase();
+        valB = String(valB).toLowerCase();
+        if (valA < valB) return sortDirection === "asc" ? -1 : 1;
+        if (valA > valB) return sortDirection === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    /**
+     * Update KPI Cards
+     */
+    function updateKPIs() {
+      let totalStock = 0;
+      const uniqueMaterials = new Set();
+      let bajoSinStockCount = 0;
+
+      currentFilteredData.forEach(item => {
+        totalStock += item.stock;
+        uniqueMaterials.add(item.material);
+        if (item.stock <= 2) {
+          bajoSinStockCount++;
+        }
+      });
+
+      document.getElementById("kpiStockTotal").textContent = totalStock.toLocaleString();
+      document.getElementById("kpiModelosTotal").textContent = uniqueMaterials.size.toLocaleString();
+      document.getElementById("kpiBajoSinStock").textContent = bajoSinStockCount.toLocaleString();
+      document.getElementById("invTableFooterTotal").textContent = totalStock.toLocaleString();
+      document.getElementById("invRecordCount").textContent = `${currentFilteredData.length} registros`;
+    }
+
+    /**
+     * Stock Traffic Light Badge Generator
+     */
+    function getStockBadge(stock) {
+      if (stock === 0) {
+        return `<span class="inline-flex items-center justify-center min-w-[70px] px-2.5 py-1 rounded text-xs font-bold bg-[#fff5f5] text-[#e03131] border border-[#ffc9c9]">
+          0
+        </span>`;
+      } else if (stock >= 1 && stock <= 2) {
+        return `<span class="inline-flex items-center justify-center min-w-[70px] px-2.5 py-1 rounded text-xs font-bold bg-[#fff0f6] text-[#d6336c] border border-[#ffdeeb]">
+          ${stock}
+        </span>`;
+      } else if (stock >= 3 && stock <= 6) {
+        return `<span class="inline-flex items-center justify-center min-w-[70px] px-2.5 py-1 rounded text-xs font-bold bg-[#fff9db] text-[#f59f00] border border-[#ffe3e3]">
+          ${stock}
+        </span>`;
+      } else {
+        return `<span class="inline-flex items-center justify-center min-w-[70px] px-2.5 py-1 rounded text-xs font-bold bg-[#e6f7ed] text-[#1e7e34] border border-[#c3ebd6]">
+          ${stock}
+        </span>`;
+      }
+    }
+
+    /**
+     * Render Table Body
+     */
+    function renderTable() {
+      const tbody = document.getElementById("inventoryTableBody");
+      tbody.innerHTML = "";
+
+      if (currentFilteredData.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-10 text-center text-slate-400 font-medium">
+              <i class="fa-solid fa-box-open text-3xl mb-2 text-slate-300 block"></i>
+              No se encontraron materiales con los filtros aplicados.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      currentFilteredData.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-blue-700 whitespace-nowrap">
+            ${item.material}
+          </td>
+          <td class="py-3 px-4 font-medium text-slate-800">
+            ${item.texto}
+          </td>
+          <td class="py-3 px-4 text-slate-600 whitespace-nowrap">
+            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-semibold">
+              ${item.categoria}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-slate-600 font-semibold whitespace-nowrap">
+            ${item.proveedor}
+          </td>
+          <td class="py-3 px-4 text-center whitespace-nowrap">
+            ${getStockBadge(item.stock)}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>
